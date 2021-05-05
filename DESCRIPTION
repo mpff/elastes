@@ -1,11 +1,15 @@
 Package: elasticproc2d
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Elastic Full Procrustes Means for Sparse and Irregular Planar Curves
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Manuel Pfeuffer <manuel.pfeuffer@hu-berlin.de>
+Maintainer: Manuel Pfeuffer <manuel.pfeuffer@hu-berlin.de>
+Description: Provides functions to compute mean curves.
+License: GPL-3
 Encoding: UTF-8
+Imports: elasdics, mgcv, sparseFLMM, orthogonalsplinebasis
 LazyData: true
+Suggests: 
+    testthat,
+    covr
+RoxygenNote: 7.1.1
