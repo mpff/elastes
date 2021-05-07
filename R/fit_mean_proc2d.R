@@ -51,23 +51,22 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, max_iter, type, eps
   #iterate procrustes mean fit and warping on procrustes fits
   for (i in 1:max_iter){
     model_data_complex <- get_model_data_complex(t_optims, srv_data_curves, knots, type)
+    model_data_complex <- model_data_complex[is.finite(model_data_complex$q_m_long),]
 
     # build response on s,t-grid per curve
     cov_dat <- lapply(split(model_data_complex, model_data_complex$id), function(x) {
       combs <- combn(1:nrow(x), 2)
       data.frame(
-        qq = x$q_m_long[combs[1,]] * Conj(x$q_m_long[combs[2,]]),
+        qq = x$q_m_long[combs[1,]] * Conj(x$q_m_long[combs[2,]]),  # Check this!
         s = x$m_long[combs[1,]],
         t = x$m_long[combs[2,]]
       )
     })
     cov_dat <- do.call(rbind, cov_dat)
 
-    print(dim(cov_dat))
-
     cov_fit <- smooth_cov_surface(cov_dat, knots, type, penalty)
 
-    beta.mat <- get_complex_coef_matrix(cov_fit, cov_dat)
+    beta.mat <- get_complex_coef_matrix(cov_fit)
 
     # calculate mean from pca on coefficient matrix
     pca <- eigen(chol.G %*% beta.mat %*% t(chol.G))
@@ -96,7 +95,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, max_iter, type, eps
       qm <- pfit_prods$qm
       qq <- pfit_prods$qq
 
-      b_optims[[j]] <<- Mod(qm/qq)
+      b_optims[[j]] <<- 1 #Mod(qm/qq)  FIX THIS MAYBE!
       G_optims[[j]] <<- Arg(qm/qq)
 
       # Calculate procrustes fit of original srv_data_curve
@@ -155,8 +154,8 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, max_iter, type, eps
 # Get inner and outer knots.
 get_knots <- function(knots, type){
   deg <- ifelse(type == "smooth", 1, 0)
-  knotl = 1 / ( length(knots) - 1 )  # mean length of a knot
-  c(rep(-knotl, deg), knots, rep(1+knotl, deg))
+  #knotl = 1 / ( length(knots) - 1 )  # mean length of a knot
+  c(rep(0, deg), knots, rep(1, deg))
 }
 
 # Get b-spline Gram matrix.
@@ -178,37 +177,38 @@ get_model_data_complex <- function(t_optims, srv_data_curves, knots, type){
     as.matrix(srv_data_curves[[j]][,-1])*sqrt(old_diff/new_diff)
   })
 
-  if(type == "polygon"){
-    q_m_all <- lapply(1: length(srv_data_curves), function(j){
-      q_m_knots <- sapply(knots[-length(knots)], function(knot){
-        idx_knot <- findInterval(knot, t_optims[[j]], rightmost.closed = T)
-        q_m_data[[j]][idx_knot, ]
-      })
-      q_knots <- data.frame("t" = knots[-length(knots)], t(q_m_knots))
-      q_data <-  data.frame("t" = t_optims[[j]][-length(t_optims[[j]])], q_m_data[[j]])
-      data <- rbind(q_knots, q_data)
-      unique(data[order(data$t),])
+  q_m_all <- lapply(1:length(srv_data_curves), function(j){
+    q_m_knots <- sapply(knots[-length(knots)], function(knot){
+      idx_knot <- findInterval(knot, t_optims[[j]], rightmost.closed = T)
+      q_m_data[[j]][idx_knot, ]
     })
-    m <- lapply(q_m_all, function(x){
-      c(x$t[-1], 1) - 0.5*diff(c(x$t, 1))
-    })
-    q_m <- lapply(q_m_all, function(x) x[,-1])
-  } else {
-    m <- lapply(t_optims, function(t_optim){
-      t_optim[-1] - 0.5*diff(t_optim)
-    })
-    q_m <- q_m_data
-  }
-  #build datacurve ids
+    q_knots <- data.frame("t" = knots[-length(knots)], t(q_m_knots),
+                          "weight" = 1/length(q_m_data[[j]]))
+    q_data <- data.frame("t" = t_optims[[j]][-length(t_optims[[j]])], q_m_data[[j]],
+                         "weight" = 1)
+    data <- rbind(q_knots, q_data)
+    unique(data[order(data$t),])
+  })
+
+  m <- lapply(q_m_all, function(x){
+    c(x$t[-1], 1) - 0.5*diff(c(x$t, 1))
+  })
+  w <- lapply(q_m_all, function(x) x$weight)
+  q_m <- lapply(q_m_all, function(x) x[,c(2,3)])
+
+  # build datacurve ids
   ids <- lapply(1:length(m), function(j){
     id <- rep(j, length(m[[j]]))
   })
-  #convert in long format
+
+  # convert in long format and complex.
   ids_long <- do.call(c, ids)
   m_long <- do.call(c, m)
+  w_long <- do.call(c, w)
   q_m_long <- do.call(rbind, q_m)
   q_m_long <- complex(real = q_m_long[,1], imaginary = q_m_long[,2])
-  data.frame("id" = ids_long, "m_long" = m_long, "q_m_long" = q_m_long)
+
+  data.frame("id" = ids_long, "weight" = w_long, "m_long" = m_long, "q_m_long" = q_m_long)
 }
 
 # creating the design matrix (with outer knots at +- avg knotlegth)
@@ -240,30 +240,41 @@ smooth_cov_surface <- function(cov_dat, knots, type, penalty){
 }
 
 # get coefficient matrix for pca
-get_complex_coef_matrix <- function(cov_fit, cov_dat){
-  beta.mat.re <- get_coef_matrix_from_model(cov_fit$re, cov_dat)
-  beta.mat.im <- get_coef_matrix_from_model(cov_fit$im, cov_dat)
+get_complex_coef_matrix <- function(cov_fit){
+  beta.mat.re <- get_coef_matrix_from_model(cov_fit$re)
+  beta.mat.im <- get_coef_matrix_from_model(cov_fit$im)
   matrix(complex(real = as.vector(beta.mat.re), imaginary = as.vector(beta.mat.im)), ncol = ncol(beta.mat.re))
 }
 
-get_coef_matrix_from_model <- function(model, cov_dat){
-  coefs <- get_unconstrained_basis_coefs(model, cov_dat)
+get_coef_matrix_from_model <- function(model){
+  coefs <- get_unconstrained_basis_coefs(model)
   s_ <- model$smooth[[1]]
   beta <- s_$Z %*% coefs
   F <- s_$bs.dim
   matrix(beta, nrow=F, ncol=F)
 }
 
-get_unconstrained_basis_coefs <- function(model, cov_dat){
-  cov_dat$qq <- model$y
+get_unconstrained_basis_coefs <- function(model){
   s_ <- model$smooth[[1]]
-  X <- Predict.matrix(s_, cov_dat)
-  print(dim(X))
-  X_ <- PredictMat(s_, cov_dat)
+
+  # Create toy data that ensures identifiability of trafo mat.
+  knots <- s_$knots
+  knots_mid <- knots[-length(knots)] + 0.5 * diff(knots)
+  knots_mid <- knots_mid[-length(knots_mid)]
+  knots_all <- unique(sort(c(knots,knots_mid)))
+  toy_dat <- expand.grid(s = knots_all, t = knots_all)
+  toy_dat$y <- rnorm(nrow(toy_dat))
+
+  # Create toy design matrix and calculate trafo matrix.
+  X <- Predict.matrix(s_, toy_dat)
+  X_ <- PredictMat(s_, toy_dat)
   X_ <- cbind(1, X_)
-  print(dim(X_))
   D <- solve(crossprod(X), crossprod(X, X_))
+
+  # Set Intercept to 0 if skew-symmetric basis.
   coefs_ <- if(s_$xt$skew == FALSE) {coef(model)} else {c(0, coef(model)[-1])}
+
+  # Apply trafo to estimated constrained coefficients.
   D %*% coefs_
 }
 
