@@ -53,7 +53,7 @@ get_evals.elastic_proc2d_mean <- function(curve, t_grid = NULL,
       mean_data <- as.data.frame(t(srvf_to_curve(t_grid, srv_mean_curve)))
       if(centering) mean_data <- center_curve(mean_data)
     } else {
-      mean_data <- srv_mean_curve
+      mean_data <- data.frame(t(srv_mean_curve(t_grid)))
     }
   } else if(curve$type == "polygon"){
     if(!is.null(t_grid)){
@@ -67,7 +67,7 @@ get_evals.elastic_proc2d_mean <- function(curve, t_grid = NULL,
       mean_data <- get_points_from_srv(srv_data)
       if(centering) mean_data <- center_curve(mean_data)
     } else {
-      mean_data <- srv_data
+      mean_data <- srv_data[,-1]
     }
   }
   colnames(mean_data) <- colnames(curve$coefs)
