@@ -8,31 +8,41 @@
 #' @return optimal rotation G and scaling b
 #' @importFrom stats approx
 
-compute_proc2d_alignment <- function(q, coefs.compl, type, knots, h){
+compute_proc2d_alignment <- function(q, coefs.compl, beta.mat.inv, G, type, knots, h, method = "linear"){
 
-  arg.grid = seq(0, 1, by=h)
+  if (method == "linear"){
+    get_intervals <- function(m){
+      out <- rep(0, length(m) + 1)
+      for(i in 2:length(out)){
+        out[i] <- out[i-1] + 2*(m[i-1] - out[i-1])
+      }
+      return(out)
+    }
+    m <- get_intervals(q$m_long)
 
-  # Calculate overlap of arg.grid and t_optims.
-  idx <- findInterval(arg.grid, q$m_long)
-  idx.bool <- which(idx > 0 & idx < length(q$m_long))
-  arg.grid.x <- arg.grid[idx.bool]
+    mean_eval <- make_design(q$m_long, knots = knots, type = type) %*% coefs.compl
 
-  # Linear interpolation of srv data curve on overlap.
-  q_approx_x <- approx(x=q$m_long, y=Re(q$q_m_long), xout=arg.grid.x)$y
-  q_approx_y <- approx(x=q$m_long, y=Im(q$q_m_long), xout=arg.grid.x)$y
-  q_approx <- complex(real=q_approx_x, imaginary=q_approx_y)
+    qq <- sum(diff(m) * Conj(q$q_m_long) * q$q_m_long)
+    qm <- sum(diff(m) * Conj(q$q_m_long) * mean_eval)
+    q_coefs <- NULL
 
-  # Evaluate mean function on overlap.
-  mean_eval <- make_design(arg.grid.x, knots = knots, type = type) %*% coefs.compl
+  } else {
+    q_B <- make_design(q$m_long, knots, type = type)
 
-  # Calculate pfit scaling+rotation
-  qm <- Conj(q_approx) * mean_eval
-  qq <- Conj(q_approx) * q_approx
+    # Estimate coeficients as restricted LSE
+    q_coefs <- solve( t(q_B) %*% q_B + Conj(beta.mat.inv)) %*% t(q_B) %*% q$q_m_long
 
-  # Numerical Integration using trapezoid rule.
-  qm <- h * ( sum(qm) - 0.5*qm[1] - 0.5*qm[length(qm)] )
-  qq <- h * ( sum(qq) - 0.5*qq[1] - 0.5*qq[length(qq)] )
+    # Normalize coefs.
+    norm <- sqrt(t(Conj(q_coefs)) %*% G %*% q_coefs)
+    print(norm)
+    q_coefs <- q_coefs / c(norm)
+
+    # Calculate pfit scaling+rotation
+    qq <- as.complex(t(Conj(q_coefs)) %*% G %*% q_coefs)
+    qm <- as.complex(t(Conj(q_coefs)) %*% G %*% coefs.compl)
+
+  }
 
   # Calculate G and b
-  list("qm" = qm, "qq" = qq, "pfit_coefs" = NULL)
+  list("qm" = qm, "qq" = qq, "q_coefs" = q_coefs)
 }
