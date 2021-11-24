@@ -1,8 +1,8 @@
-#' Fitting function for open curves
-#' @name fit_mean_proc2d
+#' Fitting function for open
 #' @description Fits an elastic full Procrustes mean for open, planar curves. Is usually called from
 #' \code{\link{compute_elastic_proc2d_mean}}.
-#' @param srv_data_curves list of \code{data.frame}s with srv vectors in each row.
+#' @param srv_data_curves list of \code{data.frame}s with srv vectors in each row.curves
+#' @name fit_mean_proc2d
 #' Usually a result of a call to \code{\link{get_srv_from_points}}
 #' @param knots set of knots for the mean spline curve
 #' @param type if "smooth" linear srv-splines are used which results in a differentiable mean curve
@@ -29,7 +29,7 @@
 #' @importFrom utils combn
 #' @importFrom splines splineDesign
 
-fit_mean_proc2d <- function(srv_data_curves, knots, penalty, max_iter, type, eps){
+fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_pen_factor, max_iter, type, eps){
   # Initial parametrisation, rotation, scaling and coefs.
   t_optims <- lapply(srv_data_curves, function(srv_data_curve){
     c(srv_data_curve$t, 1)
@@ -37,12 +37,15 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, max_iter, type, eps
   G_optims <- as.list(rep(0, length(srv_data_curves)))
   b_optims <- as.list(rep(1, length(srv_data_curves)))
   coefs <- 0
+  pfit_coefs <- as.list(rep(0, length(srv_data_curves)))
 
   # Get Gram and orthogonal trafo matrix for the mean basis.
   G <- get_gram_matrix(knots, type)
   G.inv <-solve(G)
   chol.G <- chol(G)
   chol.G.inv <- chol(G.inv)
+  L <- chol(G.inv)
+  L.inv <- solve(L)
 
   # Make Integration Grid
   h = 0.01
@@ -63,7 +66,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, max_iter, type, eps
     cov_dat <- lapply(split(model_data_complex, model_data_complex$id), function(x) {
       combs <- combn(1:nrow(x), 2)
       data.frame(
-        qq = x$q_m_long[combs[1,]] * Conj(x$q_m_long[combs[2,]]),
+        qq = Conj(x$q_m_long[combs[1,]]) * x$q_m_long[combs[2,]],
         s = x$m_long[combs[1,]],
         t = x$m_long[combs[2,]]
       )
@@ -78,8 +81,8 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, max_iter, type, eps
     beta.mat.inv <- solve(beta.mat)
 
     # Calculate mean from pca on coefficient matrix
-    pca <- eigen(chol.G %*% beta.mat %*% t(chol.G))
-    coefs.compl <- chol.G.inv %*% Conj(pca$vectors[,1])
+    pca <- eigen(t(L.inv) %*% beta.mat %*% L.inv)
+    coefs.compl <- t(L) %*% pca$vectors[,1]
 
     # Get norm of coefs.
     coefs.norm <- sqrt(t(Conj(coefs.compl)) %*% G %*% coefs.compl)
@@ -95,16 +98,16 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, max_iter, type, eps
       q <- model_data_complex[model_data_complex$id == j,]
 
       # Calculate Scalar products qq and qm.
-      pfit_prods <- compute_proc2d_alignment(q, coefs.compl, beta.mat.inv, G, type, knots, h, method = "smooth")
+      pfit_prods <- compute_proc2d_alignment(q, coefs.compl, beta.mat.inv, G, G.inv, L, pca, type, knots, h, method = pfit_method, pen_factor = pfit_pen_factor)
       qm <- pfit_prods$qm
       qq <- pfit_prods$qq
+      pfit_coefs[[j]] <<- pfit_prods$q_coefs
 
       # Save scaling and rotation.
-      b_optims[[j]] <<- 1/Re(qq)
-      G_optims[[j]] <<- Arg(qm)
+      b_optims[[j]] <<- Mod(qm/qq)
+      G_optims[[j]] <<- Arg(qm/qq)
 
       # Calculate procrustes fit.
-      #srv_data_curves[[j]] <- 1/Re(qq) * srv_data_curves[[j]]
       srv_complex = complex(real = srv_data_curves[[j]][,2], imaginary = srv_data_curves[[j]][,3])
       pfit <- c(qm/qq) * srv_complex
 
@@ -122,7 +125,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, max_iter, type, eps
         "cov_fit" = cov_fit,
         "cov_coef" = beta.mat,
         "cov_pca" = pca,
-        "pfit_coefs" = NULL,
+        "pfit_coefs" = pfit_coefs,
         "G_optims" = G_optims,
         "b_optims" = b_optims
       )
@@ -143,7 +146,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, max_iter, type, eps
     "cov_fit" = cov_fit,
     "cov_coef" = beta.mat,
     "cov_pca" = pca,
-    "pfit_coefs" = NULL,
+    "pfit_coefs" = pfit_coefs,
     "G_optims" = G_optims,
     "b_optims" = b_optims
   )
@@ -184,13 +187,16 @@ get_model_data_complex <- function(t_optims, srv_data_curves, knots, type){
       idx_knots <- sapply(knots, function(knot){
         findInterval(knot, t_optims[[j]], rightmost.closed = TRUE)
       })
-      t_new <- (knots[-length(knots)] + 0.5*diff(knots))[(diff(idx_knots) == 0)]
-      q_m_knots <- sapply(t_new, function(t){
-        idx_t <- findInterval(t, t_optims[[j]], rightmost.closed = T)
-        q_m_data[[j]][idx_t, ]
-      })
-      q_knots <- data.frame("t" = t_new, t(q_m_knots))
-
+      if(any(diff(idx_knots) == 0)){
+        t_new <- (knots[-length(knots)] + 0.5*diff(knots))[(diff(idx_knots) == 0)]
+        q_m_knots <- sapply(t_new, function(t){
+          idx_t <- findInterval(t, t_optims[[j]], rightmost.closed = T)
+          q_m_data[[j]][idx_t, ]
+        })
+        q_knots <- data.frame("t" = t_new, t(q_m_knots))
+      } else {
+        q_knots <- NULL
+      }
       q_data <-  data.frame("t" = t_optims[[j]][-length(t_optims[[j]])], q_m_data[[j]])
       data <- rbind(q_knots, q_data)
       unique(data[order(data$t),])
@@ -218,10 +224,15 @@ get_model_data_complex <- function(t_optims, srv_data_curves, knots, type){
 }
 
 # Design matrix of mean basis.
-make_design <- function(t, knots, type) {
+make_design <- function(t, knots, type, closed = FALSE) {
   deg <- ifelse(type == "smooth", 1, 0)
   knots <- get_knots(knots, type)
-  splines::splineDesign(knots = knots, x = t, ord = deg + 1)
+  design_mat <- splines::splineDesign(knots = knots, x = t, ord = deg + 1)
+  if(closed == TRUE & type == "smooth"){
+    design_mat[,1] <- design_mat[,1] + design_mat[, ncol(design_mat)]
+    design_mat <- design_mat[,-ncol(design_mat)]
+  }
+  design_mat
 }
 
 # Smooth cov surface using mgcv::bam with (skew)-symmetric tensor product p-splines and REML.
@@ -276,6 +287,12 @@ get_unconstrained_basis_coefs <- function(model){
   X <- Predict.matrix(s_, toy_dat)
   X_ <- PredictMat(s_, toy_dat)
   X_ <- if(s_$xt$skew == FALSE) {cbind(1, X_)} else {X_}  # ToDo: Check this!
+  if(s_$xt$skew == TRUE){
+    if(!all.equal(X, X_)){
+      stop("Constrained and unconstrained basis unequal for skew-symmetric covariance part.
+            Maybe try another basis specification?")
+    }
+  }
   D <- solve(crossprod(X), crossprod(X, X_))
 
   # Apply trafo to model coefs.

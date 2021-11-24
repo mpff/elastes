@@ -63,7 +63,7 @@
 #' plot(elastic_proc2d_mean)
 
 compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 11),
-                                  type = c("smooth", "polygon"), penalty = -1,
+                                  type = c("smooth", "polygon"), penalty = -1, pfit_method = "linear", pfit_pen_factor = 1,
                                   eps = 0.01, max_iter = 50) {
 
   # parametrisation with respect to arc length if not given,
@@ -92,7 +92,7 @@ compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 11)
 
   # Calculate elastic full Procrustes mean
   elastic_proc2d_mean <- fit_mean_proc2d(srv_data_curves = srv_data_curves,
-                                  knots = knots, type = type, penalty = penalty,
+                                  knots = knots, type = type, penalty = penalty, pfit_method = pfit_method, pfit_pen_factor,
                                   max_iter = max_iter, eps = eps)
 
   # Add scaling, rotation, translation and distance attributes to the original data curves.

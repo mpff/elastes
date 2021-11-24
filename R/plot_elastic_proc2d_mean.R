@@ -11,13 +11,20 @@
 #'
 #' @seealso For examples see documentation of \code{\link{compute_elastic_proc2d_mean}}.
 
-plot.elastic_proc2d_mean <- function(x, srv = FALSE, asp = 1, col = "red", ...){
+plot.elastic_proc2d_mean <- function(x, srv = FALSE, centering = TRUE, asp = 1, col = "red", ...){
   if(ncol(x$coefs) != 2){
     stop("Plotting option only for planar curves")
   }
   data_curves <- lapply(x$data_curves, function(data_curve){
     data_curve <- get_procrustes_fit(data_curve)
-    if(srv == TRUE) data_curve <- get_srv_from_points(data_curve)
+    if(srv == TRUE) {
+      data_curve <- get_srv_from_points(data_curve) }
+    else {
+      if(centering == FALSE){
+        data_curve[,3] <- data_curve[,3] - data_curve[1,3]
+        data_curve[,4] <- data_curve[,4] - data_curve[1,4]
+      }
+    }
     data_curve
     })
   data_curves <- lapply(data_curves, function(data) data[,colnames(x$coefs)])
@@ -25,11 +32,11 @@ plot.elastic_proc2d_mean <- function(x, srv = FALSE, asp = 1, col = "red", ...){
 
   #empty plot
   plot(NULL, xlim = range(data_all[,1]), ylim = range(data_all[,2]), xlab = colnames(x$coefs)[1],
-       ylab = colnames(x$coefs)[2], asp = asp)
+       ylab = colnames(x$coefs)[2], asp = 1)
 
   #plot data
   lapply(data_curves, lines, col = "gray")
 
   #plot mean
-  lines(get_evals(x, srv = srv), col = col, lwd = 2)
+  lines(get_evals(x, srv = srv, centering = centering), col = col, lwd = 2)
 }
