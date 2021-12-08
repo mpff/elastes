@@ -18,6 +18,10 @@ plot.elastic_proc2d_mean <- function(x, srv = FALSE, centering = TRUE, asp = 1, 
   data_curves <- lapply(x$data_curves, function(data_curve){
     data_curve <- get_procrustes_fit(data_curve)
     if(srv == TRUE) {
+      if("t_optim" %in% colnames(data_curve)) {
+        data_curve$t <- data_curve$t_optim
+        data_curve <- data_curve[, names(data_curve) != "t_optim"]
+      }
       data_curve <- get_srv_from_points(data_curve) }
     else {
       if(centering == FALSE){

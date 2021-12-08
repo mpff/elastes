@@ -62,8 +62,8 @@
 #'     )
 #' plot(elastic_proc2d_mean)
 
-compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 11),
-                                  type = c("smooth", "polygon"), penalty = -1, pfit_method = "linear", pfit_pen_factor = 1,
+compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13),
+                                  type = c("smooth", "polygon"), penalty = 2, pfit_method = "linear", pfit_pen_factor = 1,
                                   eps = 0.01, max_iter = 50) {
 
   # parametrisation with respect to arc length if not given,

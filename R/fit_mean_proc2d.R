@@ -100,7 +100,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
       # Calculate Scalar products qq and qm.
       pfit_prods <- compute_proc2d_alignment(q, coefs.compl, beta.mat.inv, G, G.inv, L, pca, type, knots, h, method = pfit_method, pen_factor = pfit_pen_factor)
       qm <- pfit_prods$qm
-      qq <- pfit_prods$qq
+      qq <- pfit_prods$qq  # Update normalization. This is only neq to 1, when pfit_method = "smooth"!
       pfit_coefs[[j]] <<- pfit_prods$q_coefs
 
       # Save scaling and rotation.
@@ -129,6 +129,20 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
         "G_optims" = G_optims,
         "b_optims" = b_optims
       )
+      if(max_iter == 0){
+        # need to calculate dist_to_mean. This is for full procrustes fits (w.o. warping)!
+        t_optims <- lapply(1:length(t_optims), function(j){
+          dist <- get_distance(
+            srv_curve = function(t) t(make_design(t, knots=knots, type=type) %*% coefs),
+            s = c(srv_procrustes_curves[[j]]$t, 1),
+            q = t(srv_procrustes_curves[[j]][,-1]),
+            eps = eps*100/i
+          )
+          t_optim <- t_optims[[j]]
+          attr(t_optim, "dist_to_mean") <- dist
+          t_optim
+        })
+      }
       return(list("type" = type, "coefs" = coefs, "knots" = knots,
                   "t_optims" = t_optims, "fit" = fit_object))
     }
