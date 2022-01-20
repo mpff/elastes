@@ -35,7 +35,7 @@ curve <- function(t){
 }
 
 # randomly draw sparse spirals with noise
-data_curves <- lapply(1:4, function(i){
+data_curves <- lapply(1:10, function(i){
   m <- sample(10:15, 1)
   delta <- abs(rnorm(m, mean = 1, sd = 0.05))
   t <- cumsum(delta)/sum(delta)
@@ -85,4 +85,4 @@ elastic_proc2d_mean <- compute_elastic_proc2d_mean(
 plot(elastic_proc2d_mean)
 ```
 
-<img src="man/figures/README-example-1.png" width="100%" />
+![](man/figures/README-example-1.png)<!-- -->
