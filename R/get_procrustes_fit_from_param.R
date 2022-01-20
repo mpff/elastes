@@ -7,7 +7,6 @@
 #' @param rot The rotation (in radian).
 #' @param scale The scaling.
 #' @param trans The translation.
-#' @export
 
 get_procrustes_fit_from_param <- function(data_curve, rot, scale, trans)
 {

@@ -1,17 +1,15 @@
-#' Fitting function for open
-#' @description Fits an elastic full Procrustes mean for open, planar curves. Is usually called from
-#' \code{\link{compute_elastic_proc2d_mean}}.
-#' @param srv_data_curves list of \code{data.frame}s with srv vectors in each row.curves
+#' Mean estimation for open planar curves.
 #' @name fit_mean_proc2d
-#' Usually a result of a call to \code{\link{get_srv_from_points}}
+#' @description Fits an elastic full Procrustes mean for open, planar curves.
+#' Is usually called from \code{\link{compute_elastic_proc2d_mean}}.
+#' @param srv_data_curves list of \code{data.frame}s with srv vectors in each row.curves
 #' @param knots set of knots for the mean spline curve
 #' @param type if "smooth" linear srv-splines are used which results in a differentiable mean curve
 #' if "polygon" the mean will be piecewise linear.
 #' @param penalty the penalty to use in the covariance smoothing step. use '-1' for no penalty.
 #' @param max_iter maximal number of iterations
 #' @param eps the algorithm stops if L2 norm of coefficients changes less
-#' @return a \code{list}
-#' with entries
+#' @return a \code{list} with entries
 #'   \item{type}{"smooth" or "polygon"}
 #'   \item{coefs}{\code{coefs} srv spline coefficients of the estimated mean}
 #'   \item{knots}{spline knots}

@@ -1,7 +1,7 @@
-#' Compute a elastic mean for a collection of curves
+#' Compute an elastic full Procrustes mean mean for a collection of curves
 #' @name compute_elastic_proc2d_mean
-#' @description Computes a elastic full Procrustes mean for curves stored in \code{data_curves}).
-#' Constructor function for class \code{elastic_mean}.
+#' @description Computes a elastic full Procrustes mean for curves stored in \code{data_curves}.
+#' Constructor function for class \code{elastic_proc2d_mean}.
 #' @param data_curves list of \code{data.frame}s with observed points in each row. Each
 #' variable is one coordinate direction. If there is a variable \code{t},
 #' it is treated as the time parametrisation, not as an additional coordinate.
@@ -11,6 +11,9 @@
 #' @param penalty the penalty to use in the covariance smoothing step. use '-1' for no penalty.
 #' @param eps the algorithm stops if L2 norm of coefficients changes less
 #' @param max_iter maximal number of iterations
+#' @param pfit_method (experimental) set to "smooth" for smoothing of the
+#' data_curves
+#' @param pfit_pen_factor (experimental) controls strength of the smoothing.
 #' @return an object of class \code{elastic_proc2d_mean}, which is a \code{list}
 #' with entries
 #'   \item{type}{"smooth" if mean was modeled using linear srv-splines,
@@ -19,7 +22,10 @@
 #'   \item{knots}{spline knots}
 #'   \item{data_curves}{list of \code{data.frame}s with observed points in each row.
 #'   First variable \code{t} gives the initial parametrisation, second variable \code{t_optim}
-#'   the optimal parametrisation when the curve is aligned to the mean.}
+#'   the optimal parametrisation when the curve is aligned to the mean. Has the
+#'   attributes 'rotation', 'scaling', 'translation' adn 'dist_to_mean'. Use
+#'   \code{\link{get_procrustes_fit}} to get the elastic full Procrustes fit.}
+#'  \item{fit}{see \code{fit_mean_proc2d}}
 #' @export
 #' @exportClass elastic_proc2d_mean
 #' @import elasdics
@@ -61,6 +67,7 @@
 #'     penalty = 0
 #'     )
 #' plot(elastic_proc2d_mean)
+
 
 compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13),
                                   type = c("smooth", "polygon"), penalty = 2, pfit_method = "linear", pfit_pen_factor = 1,

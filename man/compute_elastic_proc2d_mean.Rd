@@ -2,13 +2,15 @@
 % Please edit documentation in R/compute_elastic_proc2d_mean.R
 \name{compute_elastic_proc2d_mean}
 \alias{compute_elastic_proc2d_mean}
-\title{Compute a elastic mean for a collection of curves}
+\title{Compute an elastic full Procrustes mean mean for a collection of curves}
 \usage{
 compute_elastic_proc2d_mean(
   data_curves,
-  knots = seq(0, 1, len = 11),
+  knots = seq(0, 1, len = 13),
   type = c("smooth", "polygon"),
-  penalty = -1,
+  penalty = 2,
+  pfit_method = "linear",
+  pfit_pen_factor = 1,
   eps = 0.01,
   max_iter = 50
 )
@@ -25,6 +27,11 @@ if "polygon" the mean will be piecewise linear, if "cubic" the mean will be two 
 
 \item{penalty}{the penalty to use in the covariance smoothing step. use '-1' for no penalty.}
 
+\item{pfit_method}{(experimental) set to "smooth" for smoothing of the
+data_curves}
+
+\item{pfit_pen_factor}{(experimental) controls strength of the smoothing.}
+
 \item{eps}{the algorithm stops if L2 norm of coefficients changes less}
 
 \item{max_iter}{maximal number of iterations}
@@ -38,11 +45,14 @@ with entries
   \item{knots}{spline knots}
   \item{data_curves}{list of \code{data.frame}s with observed points in each row.
   First variable \code{t} gives the initial parametrisation, second variable \code{t_optim}
-  the optimal parametrisation when the curve is aligned to the mean.}
+  the optimal parametrisation when the curve is aligned to the mean. Has the
+  attributes 'rotation', 'scaling', 'translation' adn 'dist_to_mean'. Use
+  \code{\link{get_procrustes_fit}} to get the elastic full Procrustes fit.}
+ \item{fit}{see \code{fit_mean_proc2d}}
 }
 \description{
-Computes a elastic full Procrustes mean for curves stored in \code{data_curves}).
-Constructor function for class \code{elastic_mean}.
+Computes a elastic full Procrustes mean for curves stored in \code{data_curves}.
+Constructor function for class \code{elastic_proc2d_mean}.
 }
 \examples{
 curve <- function(t){

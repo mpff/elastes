@@ -4,7 +4,20 @@
 \alias{compute_proc2d_alignment}
 \title{Optimal rotation and scaling alignment to a smooth curve}
 \usage{
-compute_proc2d_alignment(q, coefs.compl, type, knots, h)
+compute_proc2d_alignment(
+  q,
+  coefs.compl,
+  beta.mat.inv,
+  G,
+  G.inv,
+  L,
+  pca,
+  type,
+  knots,
+  h,
+  method = "linear",
+  pen_factor = 1
+)
 }
 \arguments{
 \item{q}{complex srv curve with parametrization, needs to be vectorised.

@@ -2,13 +2,21 @@
 % Please edit documentation in R/fit_mean_proc2d.R
 \name{fit_mean_proc2d}
 \alias{fit_mean_proc2d}
-\title{Fitting function for open curves}
+\title{Mean estimation for open planar curves.}
 \usage{
-fit_mean_proc2d(srv_data_curves, knots, penalty, max_iter, type, eps)
+fit_mean_proc2d(
+  srv_data_curves,
+  knots,
+  penalty,
+  pfit_method,
+  pfit_pen_factor,
+  max_iter,
+  type,
+  eps
+)
 }
 \arguments{
-\item{srv_data_curves}{list of \code{data.frame}s with srv vectors in each row.
-Usually a result of a call to \code{\link{get_srv_from_points}}}
+\item{srv_data_curves}{list of \code{data.frame}s with srv vectors in each row.curves}
 
 \item{knots}{set of knots for the mean spline curve}
 
@@ -22,8 +30,7 @@ if "polygon" the mean will be piecewise linear.}
 \item{eps}{the algorithm stops if L2 norm of coefficients changes less}
 }
 \value{
-a \code{list}
-with entries
+a \code{list} with entries
   \item{type}{"smooth" or "polygon"}
   \item{coefs}{\code{coefs} srv spline coefficients of the estimated mean}
   \item{knots}{spline knots}
@@ -39,6 +46,6 @@ with entries
       \code{pfit_coefs} the mean basis coefs of smoothed pfits in the final iteration}
 }
 \description{
-Fits an elastic full Procrustes mean for open, planar curves. Is usually called from
-\code{\link{compute_elastic_proc2d_mean}}.
+Fits an elastic full Procrustes mean for open, planar curves.
+Is usually called from \code{\link{compute_elastic_proc2d_mean}}.
 }

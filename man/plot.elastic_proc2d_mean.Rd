@@ -4,7 +4,7 @@
 \alias{plot.elastic_proc2d_mean}
 \title{Plot method for planar elastic procrustes mean curves}
 \usage{
-\method{plot}{elastic_proc2d_mean}(x, srv = FALSE, asp = 1, col = "red", ...)
+\method{plot}{elastic_proc2d_mean}(x, srv = FALSE, centering = TRUE, asp = 1, col = "red", ...)
 }
 \arguments{
 \item{x}{object of class \code{elastic_proc2d_mean},
