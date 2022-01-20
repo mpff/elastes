@@ -4,6 +4,9 @@
 # elasdicsproc2d
 
 <!-- badges: start -->
+
+[![Codecov test
+coverage](https://codecov.io/gh/mpff/elasdicsproc2d/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mpff/elasdicsproc2d?branch=main)
 <!-- badges: end -->
 
 The goal of elasdicsproc2d is to …
