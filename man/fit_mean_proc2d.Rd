@@ -22,6 +22,10 @@ fit_mean_proc2d(
 
 \item{penalty}{the penalty to use in the covariance smoothing step. use '-1' for no penalty.}
 
+\item{pfit_method}{temp}
+
+\item{pfit_pen_factor}{temp}
+
 \item{max_iter}{maximal number of iterations}
 
 \item{type}{if "smooth" linear srv-splines are used which results in a differentiable mean curve
@@ -31,19 +35,19 @@ if "polygon" the mean will be piecewise linear.}
 }
 \value{
 a \code{list} with entries
-  \item{type}{"smooth" or "polygon"}
-  \item{coefs}{\code{coefs} srv spline coefficients of the estimated mean}
-  \item{knots}{spline knots}
-  \item{penalty}{penalty usedin the covariance estimation}
-  \item{t_optims}{optimal parametrisations}
-  \item{G_optims}{optimal rotations}
-  \item{b_optims}{optimal scalings}
-  \item{iter}{number of iterations until convergence}
-  \item{fit}{a \code{list} containing
-      \code{gram} the mean basis Gram matrix,
-      \code{cov_fit} the covariance smoothing objects in the final iteration,
-      \code{cov_pca} cov coef matrix pca object in the final iteration and
-      \code{pfit_coefs} the mean basis coefs of smoothed pfits in the final iteration}
+\item{type}{"smooth" or "polygon"}
+\item{coefs}{\code{coefs} srv spline coefficients of the estimated mean}
+\item{knots}{spline knots}
+\item{penalty}{penalty usedin the covariance estimation}
+\item{t_optims}{optimal parametrisations}
+\item{G_optims}{optimal rotations}
+\item{b_optims}{optimal scalings}
+\item{iter}{number of iterations until convergence}
+\item{fit}{a \code{list} containing
+\code{gram} the mean basis Gram matrix,
+\code{cov_fit} the covariance smoothing objects in the final iteration,
+\code{cov_pca} cov coef matrix pca object in the final iteration and
+\code{pfit_coefs} the mean basis coefs of smoothed pfits in the final iteration}
 }
 \description{
 Fits an elastic full Procrustes mean for open, planar curves.

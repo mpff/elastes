@@ -27,7 +27,6 @@
 #'   \code{\link{get_procrustes_fit}} to get the elastic full Procrustes fit.}
 #'  \item{fit}{see \code{fit_mean_proc2d}}
 #' @export
-#' @exportClass elastic_proc2d_mean
 #' @import elasdics
 #' @import mgcv
 #' @import sparseFLMM
@@ -58,13 +57,13 @@
 #' data_curves <- lapply(data_curves, rand_scale)
 #' data_curves <- lapply(data_curves, rand_rotate)
 #'
-#' #compute smooth procrustes mean with 0 order penalty
+#' #compute smooth procrustes mean with 2 order penalty
 #' knots <- seq(0,1, length = 11)
 #' elastic_proc2d_mean <- compute_elastic_proc2d_mean(
 #'     data_curves,
 #'     knots = knots,
 #'     type = "smooth",
-#'     penalty = 0
+#'     penalty = 2
 #'     )
 #' plot(elastic_proc2d_mean)
 

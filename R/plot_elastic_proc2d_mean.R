@@ -5,6 +5,8 @@
 #' @param asp numeric, giving the aspect ratio of the two coordinates,
 #' see \code{\link{plot.window}} for details.
 #' @param col color of the mean curve.
+#' @param srv TRUE if the SRV curve shall be plotted
+#' @param centering TRUE if mean and pfits shalle be centered
 #' @param ... further plotting parameters.
 #' @importFrom graphics plot lines
 #' @export

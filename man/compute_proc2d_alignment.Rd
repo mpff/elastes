@@ -25,9 +25,29 @@ The result of a call to \code{get_model_data_complex}}
 
 \item{coefs.compl}{complex coefficients of smooth curve}
 
+\item{beta.mat.inv}{temp}
+
+\item{G}{temp}
+
+\item{G.inv}{temp}
+
+\item{L}{temp}
+
+\item{pca}{temp}
+
 \item{type}{spline degree}
 
 \item{knots}{basis knots}
+
+\item{h}{temp}
+
+\item{method}{temp}
+
+\item{pen_factor}{temp}
+
+\item{beta.mat}{temp}
+
+\item{inv}{temp}
 }
 \value{
 optimal rotation G and scaling b

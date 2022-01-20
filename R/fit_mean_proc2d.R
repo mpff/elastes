@@ -9,6 +9,8 @@
 #' @param penalty the penalty to use in the covariance smoothing step. use '-1' for no penalty.
 #' @param max_iter maximal number of iterations
 #' @param eps the algorithm stops if L2 norm of coefficients changes less
+#' @param pfit_method temp
+#' @param pfit_pen_factor temp
 #' @return a \code{list} with entries
 #'   \item{type}{"smooth" or "polygon"}
 #'   \item{coefs}{\code{coefs} srv spline coefficients of the estimated mean}
@@ -231,7 +233,7 @@ get_model_data_complex <- function(t_optims, srv_data_curves, knots, type){
   ids_long <- do.call(c, ids)
   m_long <- do.call(c, m)
   q_m_long <- do.call(rbind, q_m)
-  q_m_long <- complex(re = q_m_long[,1], im = q_m_long[,2])
+  q_m_long <- complex(real = q_m_long[,1], imaginary = q_m_long[,2])
   data.frame("id" = ids_long, "m_long" = m_long, "q_m_long" = q_m_long)
 }
 

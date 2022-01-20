@@ -4,6 +4,7 @@
 #' to be 0, last value needs to be 1.
 #' If t_grid = NULL, a default regular grid with grid length 0.01 is chosen
 #' @param centering TRUE if curves shall be centered
+#' @param srv TRUE if SRV curve shall be evaluated
 #' @param ... other arguments
 #' @return a \code{data.frame} with evaluations of the curve
 #' at the values in \code{t_grid} in its rows.

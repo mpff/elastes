@@ -10,6 +10,10 @@
 \item{x}{object of class \code{elastic_proc2d_mean},
 usually a result of a call to \code{\link{compute_elastic_proc2d_mean}}}
 
+\item{srv}{TRUE if the SRV curve shall be plotted}
+
+\item{centering}{TRUE if mean and pfits shalle be centered}
+
 \item{asp}{numeric, giving the aspect ratio of the two coordinates,
 see \code{\link{plot.window}} for details.}
 

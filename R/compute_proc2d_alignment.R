@@ -5,6 +5,16 @@
 #' @param coefs.compl complex coefficients of smooth curve
 #' @param type spline degree
 #' @param knots basis knots
+#' @param beta.mat temp
+#' @param beta.mat.inv temp
+#' @param pen_factor temp
+#' @param inv temp
+#' @param G temp
+#' @param G.inv temp
+#' @param L temp
+#' @param pca temp
+#' @param method temp
+#' @param h temp
 #' @return optimal rotation G and scaling b
 #' @importFrom stats approx
 

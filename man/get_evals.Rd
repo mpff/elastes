@@ -22,6 +22,8 @@ If t_grid = NULL, a default regular grid with grid length 0.01 is chosen}
 \item{...}{other arguments}
 
 \item{centering}{TRUE if curves shall be centered}
+
+\item{srv}{TRUE if SRV curve shall be evaluated}
 }
 \value{
 a \code{data.frame} with evaluations of the curve
