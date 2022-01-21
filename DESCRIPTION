@@ -10,6 +10,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Imports:
     utils,
+    gtools,
     stats,
     splines,
     graphics,
@@ -18,8 +19,11 @@ Imports:
     sparseFLMM,
     orthogonalsplinebasis
 Suggests:
+    knitr,
     covr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    rmarkdown
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Config/testthat/edition: 3
+VignetteBuilder: knitr

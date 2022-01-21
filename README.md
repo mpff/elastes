@@ -9,12 +9,12 @@
 coverage](https://codecov.io/gh/mpff/elasdicsproc2d/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mpff/elasdicsproc2d?branch=main)
 <!-- badges: end -->
 
-The goal of elasdicsproc2d is to estimate elastic shape means from
-sparse and irregular observations.
+elasdicsproc2d is a R package to estimate elastic shape means from
+sparse and irregular planar curves.
 
 ## Installation
 
-You can install the development version of elasdicsproc2d from
+You can install the development version from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -24,7 +24,7 @@ devtools::install_github("mpff/elasdicsproc2d")
 
 ## Example
 
-Calculate a smooth shape mean for sparse spirals.
+Calculate a smooth elastic shape mean for sparse spirals.
 
 ``` r
 library(elasdicsproc2d)
@@ -65,23 +65,6 @@ elastic_proc2d_mean <- compute_elastic_proc2d_mean(
   type = "smooth",
   penalty = 2
 )
-#> Warning in smooth.construct.ps.smooth.spec(eval(as.call(list(as.symbol("s"), :
-#> there is *no* information about some basis coefficients
-
-#> Warning in smooth.construct.ps.smooth.spec(eval(as.call(list(as.symbol("s"), :
-#> there is *no* information about some basis coefficients
-
-#> Warning in smooth.construct.ps.smooth.spec(eval(as.call(list(as.symbol("s"), :
-#> there is *no* information about some basis coefficients
-
-#> Warning in smooth.construct.ps.smooth.spec(eval(as.call(list(as.symbol("s"), :
-#> there is *no* information about some basis coefficients
-
-#> Warning in smooth.construct.ps.smooth.spec(eval(as.call(list(as.symbol("s"), :
-#> there is *no* information about some basis coefficients
-
-#> Warning in smooth.construct.ps.smooth.spec(eval(as.call(list(as.symbol("s"), :
-#> there is *no* information about some basis coefficients
 plot(elastic_proc2d_mean)
 ```
 

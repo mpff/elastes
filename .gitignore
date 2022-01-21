@@ -4,3 +4,6 @@
 .Ruserdata
 .Rprofile
 renv/*
+inst/doc
+/doc/
+/Meta/

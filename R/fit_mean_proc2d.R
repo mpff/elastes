@@ -64,11 +64,13 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
 
     # Build complex response on s,t-grid per curve
     cov_dat <- lapply(split(model_data_complex, model_data_complex$id), function(x) {
-      combs <- combn(1:nrow(x), 2)
+      #combs <- utils::combn(1:nrow(x), 2)  # without diagional
+      combs <- t(gtools::combinations(nrow(x), 2, repeats.allowed = T))  # Include diagonal
       data.frame(
         qq = Conj(x$q_m_long[combs[1,]]) * x$q_m_long[combs[2,]],
         s = x$m_long[combs[1,]],
-        t = x$m_long[combs[2,]]
+        t = x$m_long[combs[2,]],
+        st = as.numeric(x$m_long[combs[1,]] == x$m_long[combs[2,]])
       )
     })
     cov_dat <- do.call(rbind, cov_dat)
@@ -79,6 +81,10 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
     # Get unconstrained basis coef matrix from cov fit.
     beta.mat <- get_complex_coef_matrix(cov_fit)
     beta.mat.inv <- solve(beta.mat)
+
+    # Get white-noise variance function.
+    tau.mat <- get_white_noise_matrix(cov_fit)
+    tau.mat.inv <- solve(tau.mat)
 
     # Calculate mean from pca on coefficient matrix
     pca <- eigen(t(L.inv) %*% beta.mat %*% L.inv)
@@ -124,6 +130,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
         "gram" = G,
         "cov_fit" = cov_fit,
         "cov_coef" = beta.mat,
+        "var_coef" = tau.mat,
         "cov_pca" = pca,
         "pfit_coefs" = pfit_coefs,
         "G_optims" = G_optims,
@@ -159,6 +166,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
     "gram" = G,
     "cov_fit" = cov_fit,
     "cov_coef" = beta.mat,
+    "var_coef" = tau.mat,
     "cov_pca" = pca,
     "pfit_coefs" = pfit_coefs,
     "G_optims" = G_optims,
@@ -261,12 +269,15 @@ smooth_cov_surface <- function(cov_dat, knots, type, penalty){
 
   # fit covariance surface
   cov_fit <- list()
-  cov_fit$re <- mgcv::bam(Re(qq) ~ s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d),
-                                     fx = cov.fx, xt = list(skew = FALSE)),
-                          data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots))
-  cov_fit$im <- mgcv::bam(Im(qq) ~ -1 + s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d),
-                                          fx = cov.fx, xt = list(skew = TRUE)),
-                          data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots))
+  cov_fit$re <- mgcv::bam(
+    Re(qq) ~ s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx, xt = list(skew = FALSE))
+             + s(t, by = st, bs = "ps", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx),
+    data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots)
+  )
+  cov_fit$im <- mgcv::bam(
+    Im(qq) ~ -1 + s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx, xt = list(skew = TRUE)),
+    data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots)
+  )
   cov_fit
 }
 
@@ -284,6 +295,15 @@ get_coef_matrix_from_model <- function(model){
   F <- s_$bs.dim
   matrix(beta, nrow=F, ncol=F)
 }
+
+
+# Get white noise variance
+get_white_noise_matrix <- function(cov_fit){
+  s <- cov_fit$re$smooth[[2]]
+  tau.mat <- coef(cov_fit$re)[s$first.para:s$last.para]
+  diag(tau.mat)
+}
+
 
 # Calculate the unconstrained basis coefs from constrained mgcv smooth.
 get_unconstrained_basis_coefs <- function(model){
@@ -310,7 +330,7 @@ get_unconstrained_basis_coefs <- function(model){
   D <- solve(crossprod(X), crossprod(X, X_))
 
   # Apply trafo to model coefs.
-  D %*% coef(model)
+  D %*% coef(model)[1:s_$last.para]  # without diagonal!
 }
 
 

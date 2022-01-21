@@ -18,11 +18,11 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/mpff/elasdicsproc2d/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mpff/elasdicsproc2d?branch=main)
 <!-- badges: end -->
 
-The goal of elasdicsproc2d is to estimate elastic shape means from sparse and irregular observations.
+elasdicsproc2d is a R package to estimate elastic shape means from sparse and irregular planar curves.
 
 ## Installation
 
-You can install the development version of elasdicsproc2d from [GitHub](https://github.com/) with:
+You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
@@ -31,7 +31,7 @@ devtools::install_github("mpff/elasdicsproc2d")
 
 ## Example
 
-Calculate a smooth shape mean for sparse spirals.
+Calculate a smooth elastic shape mean for sparse spirals.
 
 ```{r example}
 library(elasdicsproc2d)
