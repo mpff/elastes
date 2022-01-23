@@ -83,8 +83,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
     beta.mat.inv <- solve(beta.mat)
 
     # Get white-noise variance function.
-    tau.mat <- get_white_noise_matrix(cov_fit)
-    tau.mat.inv <- solve(tau.mat)
+    tau.coefs <- get_white_noise_coefs(cov_fit)
 
     # Calculate mean from pca on coefficient matrix
     pca <- eigen(t(L.inv) %*% beta.mat %*% L.inv)
@@ -130,7 +129,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
         "gram" = G,
         "cov_fit" = cov_fit,
         "cov_coef" = beta.mat,
-        "var_coef" = tau.mat,
+        "var_coef" = tau.coefs,
         "cov_pca" = pca,
         "pfit_coefs" = pfit_coefs,
         "G_optims" = G_optims,
@@ -166,7 +165,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
     "gram" = G,
     "cov_fit" = cov_fit,
     "cov_coef" = beta.mat,
-    "var_coef" = tau.mat,
+    "var_coef" = tau.coefs,
     "cov_pca" = pca,
     "pfit_coefs" = pfit_coefs,
     "G_optims" = G_optims,
@@ -267,11 +266,11 @@ smooth_cov_surface <- function(cov_dat, knots, type, penalty){
   cov.knots = get_knots(knots, type)
   cov.k = length(cov.knots) - cov.m - 2  # basis dimension
 
-  # fit covariance surface
+  # fit covariance surface and measurement-error variance.
   cov_fit <- list()
   cov_fit$re <- mgcv::bam(
     Re(qq) ~ s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx, xt = list(skew = FALSE))
-             + s(t, by = st, bs = "ps", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx),
+             + s(t, by = st, bs = "ps", k = cov.k, m = c(cov.m, 1), fx = cov.fx),
     data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots)
   )
   cov_fit$im <- mgcv::bam(
@@ -298,10 +297,14 @@ get_coef_matrix_from_model <- function(model){
 
 
 # Get white noise variance
-get_white_noise_matrix <- function(cov_fit){
+get_white_noise_coefs <- function(cov_fit){
   s <- cov_fit$re$smooth[[2]]
-  tau.mat <- coef(cov_fit$re)[s$first.para:s$last.para]
-  diag(tau.mat)
+  coefs_ <- coef(cov_fit$re)[s$first.para:s$last.para]
+  if(any(coefs_ < 0)){
+    warning("Coercing negative values in measurement-error variance to 0!")
+    coefs_[coefs_<0] <- 0
+  }
+  coefs_
 }
 
 
