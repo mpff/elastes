@@ -16,7 +16,8 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/mpff/elasdicsproc2d/workflows/R-CMD-check/badge.svg)](https://github.com/mpff/elasdicsproc2d/actions)
-[![Codecov test coverage](https://codecov.io/gh/mpff/elasdicsproc2d/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mpff/elasdicsproc2d?branch=main)
+[![codecov](https://codecov.io/gh/mpff/elasdicsproc2d/branch/main/graph/badge.svg?token=p0xOHfDpnk)](https://codecov.io/gh/mpff/elasdicsproc2d)
+[![lint-project](https://github.com/mpff/elasdicsproc2d/workflows/lint-project/badge.svg)](https://github.com/mpff/elasdicsproc2d/actions)
 <!-- badges: end -->
 
 elasdicsproc2d is a R package to estimate elastic shape means from sparse and irregular planar curves.
