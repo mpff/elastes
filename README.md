@@ -5,6 +5,7 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/mpff/elasdicsproc2d/workflows/R-CMD-check/badge.svg)](https://github.com/mpff/elasdicsproc2d/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/mpff/elasdicsproc2d/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mpff/elasdicsproc2d?branch=main)
 <!-- badges: end -->
@@ -65,7 +66,12 @@ elastic_proc2d_mean <- compute_elastic_proc2d_mean(
   type = "smooth",
   penalty = 2
 )
-plot(elastic_proc2d_mean)
 ```
 
 ![](man/figures/README-example-1.png)<!-- -->
+
+``` r
+plot(elastic_proc2d_mean)
+```
+
+![](man/figures/README-example-2.png)<!-- -->
