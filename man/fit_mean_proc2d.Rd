@@ -8,11 +8,12 @@ fit_mean_proc2d(
   srv_data_curves,
   knots,
   penalty,
+  var_type,
   pfit_method,
-  pfit_pen_factor,
   max_iter,
   type,
-  eps
+  eps,
+  cluster
 )
 }
 \arguments{
@@ -22,9 +23,9 @@ fit_mean_proc2d(
 
 \item{penalty}{the penalty to use in the covariance smoothing step. use '-1' for no penalty.}
 
-\item{pfit_method}{temp}
+\item{var_type}{assume either "smooth" or "constant" function for variance estimate in cov surface}
 
-\item{pfit_pen_factor}{temp}
+\item{pfit_method}{temp}
 
 \item{max_iter}{maximal number of iterations}
 
@@ -32,6 +33,8 @@ fit_mean_proc2d(
 if "polygon" the mean will be piecewise linear.}
 
 \item{eps}{the algorithm stops if L2 norm of coefficients changes less}
+
+\item{cluster}{a cluster object for use in the \code{bam} call}
 }
 \value{
 a \code{list} with entries
@@ -42,6 +45,7 @@ a \code{list} with entries
 \item{t_optims}{optimal parametrisations}
 \item{G_optims}{optimal rotations}
 \item{b_optims}{optimal scalings}
+\item{n_optims}{optimal re-normalisation}
 \item{iter}{number of iterations until convergence}
 \item{fit}{a \code{list} containing
 \code{gram} the mean basis Gram matrix,

@@ -38,7 +38,7 @@ plot.elastic_proc2d_mean <- function(x, srv = FALSE, centering = TRUE, asp = 1, 
 
   #empty plot
   plot(NULL, xlim = range(data_all[,1]), ylim = range(data_all[,2]), xlab = colnames(x$coefs)[1],
-       ylab = colnames(x$coefs)[2], asp = 1)
+       ylab = colnames(x$coefs)[2], asp = 1, ...)
 
   #plot data
   lapply(data_curves, lines, col = "gray")

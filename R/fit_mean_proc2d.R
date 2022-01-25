@@ -11,7 +11,6 @@
 #' @param max_iter maximal number of iterations
 #' @param eps the algorithm stops if L2 norm of coefficients changes less
 #' @param pfit_method temp
-#' @param pfit_pen_factor temp
 #' @param cluster a cluster object for use in the \code{bam} call
 #' @return a \code{list} with entries
 #'   \item{type}{"smooth" or "polygon"}
@@ -21,6 +20,7 @@
 #'   \item{t_optims}{optimal parametrisations}
 #'   \item{G_optims}{optimal rotations}
 #'   \item{b_optims}{optimal scalings}
+#'   \item{n_optims}{optimal re-normalisation}
 #'   \item{iter}{number of iterations until convergence}
 #'   \item{fit}{a \code{list} containing
 #'       \code{gram} the mean basis Gram matrix,
@@ -38,6 +38,8 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
   })
   G_optims <- as.list(rep(0, length(srv_data_curves)))
   b_optims <- as.list(rep(1, length(srv_data_curves)))
+  l_optims <- as.list(rep(1, length(srv_data_curves)))
+  l_optims_old <- as.list(rep(1, length(srv_data_curves)))
   coefs <- 0
   pfit_coefs <- as.list(rep(0, length(srv_data_curves)))
 
@@ -66,7 +68,6 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
 
     # Build complex response on s,t-grid per curve
     cov_dat <- lapply(split(model_data_complex, model_data_complex$id), function(x) {
-      #combs <- utils::combn(1:nrow(x), 2)  # without diagional
       combs <- t(gtools::combinations(nrow(x), 2, repeats.allowed = T))  # Include diagonal
       data.frame(
         qq = Conj(x$q_m_long[combs[1,]]) * x$q_m_long[combs[2,]],
@@ -101,19 +102,30 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
 
       q <- model_data_complex[model_data_complex$id == j,]
 
-      # Calculate Scalar products qq and qm.
-      pfit_prods <- compute_proc2d_alignment(q, coefs.compl, beta.mat.inv, G, G.inv, L, pca, type, knots, h, method = pfit_method, pen_factor = pfit_pen_factor)
-      qm <- pfit_prods$qm
-      qq <- pfit_prods$qq  # Update normalization. This is only neq to 1, when pfit_method = "smooth"!
+      # Calculate Scalar products qq and qm (wird noch aufgeräumt!!)
+      pfit_prods <- fit_alignment_proc2d(q, type, knots, var_type, coefs.compl, method = pfit_method, cov_fit, pca, L)
+
+      # Get alignment results
+      w <- pfit_prods$w  # Conj(z1)
+      l <- pfit_prods$l  # length(beta)
       pfit_coefs[[j]] <<- pfit_prods$q_coefs
 
-      # Save scaling and rotation.
-      b_optims[[j]] <<- Mod(qm/qq)
-      G_optims[[j]] <<- Arg(qm/qq)
+      # SRV curve to complex.
+      srv_complex <- complex(real = srv_data_curves[[j]][,2], imaginary = srv_data_curves[[j]][,3])
 
-      # Calculate procrustes fit.
-      srv_complex = complex(real = srv_data_curves[[j]][,2], imaginary = srv_data_curves[[j]][,3])
-      pfit <- c(qm/qq) * srv_complex
+      # Update normalization of SRV curve.
+      srv_complex <- c(1/sqrt(l)) * srv_complex
+      srv_data_curves[[j]][,2] <<- Re(srv_complex)
+      srv_data_curves[[j]][,3] <<- Im(srv_complex)
+
+      # Calculate rotation aligned and re-normalized SRV curve.
+      pfit <- c(w/Mod(w)) * srv_complex  # rotation alignment
+
+      # Save scaling and rotation alignment, save re-normalisation.
+      b_optims[[j]] <<- Mod(w)
+      G_optims[[j]] <<- Arg(w)
+      l_optims_old[[j]] <- l_optims[[j]]  # b_optims and l_optims are from diff. iterations!
+      l_optims[[j]] <<- l_optims[[j]] * l
 
       # Return SRV Procrustes Fit.
       data.frame(t = srv_data_curves[[j]][,1], X1 = Re(pfit), X2 = Im(pfit))
@@ -131,7 +143,8 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
         "cov_pca" = pca,
         "pfit_coefs" = pfit_coefs,
         "G_optims" = G_optims,
-        "b_optims" = b_optims
+        "b_optims" = b_optims,
+        "l_optims" = l_optims_old
       )
       if(max_iter == 0){
         # need to calculate dist_to_mean. This is for full procrustes fits (w.o. warping)!
@@ -166,11 +179,13 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
     "cov_pca" = pca,
     "pfit_coefs" = pfit_coefs,
     "G_optims" = G_optims,
-    "b_optims" = b_optims
+    "b_optims" = b_optims,
+    "l_optims" = l_optims_old
   )
   return(list("type" = type, "coefs" = coefs, "knots" = knots,
               "t_optims" = t_optims, "var_type" = var_type, "fit" = fit_object))
 }
+
 
 # Get inner and outer knots.
 get_knots <- function(knots, type){
@@ -178,6 +193,7 @@ get_knots <- function(knots, type){
   knotl = 1 / ( length(knots) - 1 )  # mean length of a knot
   c(rep(-knotl, deg), knots, rep(1+knotl, deg))
 }
+
 
 # Get b-spline Gram matrix.
 get_gram_matrix <- function(knots, type){
@@ -189,6 +205,7 @@ get_gram_matrix <- function(knots, type){
     orthogonalsplinebasis::GramMatrix(osb_smooth)
   }
 }
+
 
 # Get complex srv data curves, with additional oversampling for identifiability.
 get_model_data_complex <- function(t_optims, srv_data_curves, knots, type){
@@ -237,9 +254,12 @@ get_model_data_complex <- function(t_optims, srv_data_curves, knots, type){
   ids_long <- do.call(c, ids)
   m_long <- do.call(c, m)
   q_m_long <- do.call(rbind, q_m)
+
+  # Return
   q_m_long <- complex(real = q_m_long[,1], imaginary = q_m_long[,2])
   data.frame("id" = ids_long, "m_long" = m_long, "q_m_long" = q_m_long)
 }
+
 
 # Design matrix of mean basis.
 make_design <- function(t, knots, type, closed = FALSE) {
@@ -252,6 +272,7 @@ make_design <- function(t, knots, type, closed = FALSE) {
   }
   design_mat
 }
+
 
 # Smooth cov surface using mgcv::bam with (skew)-symmetric tensor product p-splines and REML.
 smooth_cov_surface <- function(cov_dat, knots, type, penalty, var_type, cluster){
@@ -315,19 +336,9 @@ get_unconstrained_basis_coefs <- function(model){
   X <- Predict.matrix(s_, toy_dat)
   X_ <- PredictMat(s_, toy_dat)
   X_ <- if(s_$xt$skew == FALSE) {cbind(1, X_)} else {X_}  # ToDo: Check this!
-  if(s_$xt$skew == TRUE){
-    if(!all.equal(X, X_)){
-      stop("Constrained and unconstrained basis unequal for skew-symmetric covariance part.
-            Maybe try another basis specification?")
-    }
-  }
   D <- solve(crossprod(X), crossprod(X, X_))
 
   # Apply trafo to model coefs.
   coef_idxs <- unique(c(1,s_$first.para:s_$last.para))  # Only intercept and tensor product smooth.
   D %*% coef(model)[coef_idxs]
 }
-
-
-
-

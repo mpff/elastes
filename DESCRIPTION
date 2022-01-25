@@ -17,8 +17,7 @@ Imports:
     elasdics,
     mgcv,
     sparseFLMM,
-    orthogonalsplinebasis,
-    parallel
+    orthogonalsplinebasis
 Suggests:
     knitr,
     covr,

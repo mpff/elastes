@@ -9,10 +9,11 @@ compute_elastic_proc2d_mean(
   knots = seq(0, 1, len = 13),
   type = c("smooth", "polygon"),
   penalty = 2,
-  pfit_method = "linear",
-  pfit_pen_factor = 1,
+  var_type = "constant",
+  pfit_method = "polygon",
   eps = 0.01,
-  max_iter = 50
+  max_iter = 50,
+  cluster = NULL
 )
 }
 \arguments{
@@ -27,14 +28,16 @@ if "polygon" the mean will be piecewise linear, if "cubic" the mean will be two 
 
 \item{penalty}{the penalty to use in the covariance smoothing step. use '-1' for no penalty.}
 
-\item{pfit_method}{(experimental) set to "smooth" for smoothing of the
-data_curves}
+\item{var_type}{(experimental) assume "smooth" or "constant" measurement-error variance along t}
 
-\item{pfit_pen_factor}{(experimental) controls strength of the smoothing.}
+\item{pfit_method}{(experimental) "smooth" or "polygon"}
 
 \item{eps}{the algorithm stops if L2 norm of coefficients changes less}
 
 \item{max_iter}{maximal number of iterations}
+
+\item{cluster}{(experimental) use the parallel package for faster computation
+data_curves}
 }
 \value{
 an object of class \code{elastic_proc2d_mean}, which is a \code{list}
