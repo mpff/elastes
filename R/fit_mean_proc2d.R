@@ -7,10 +7,12 @@
 #' @param type if "smooth" linear srv-splines are used which results in a differentiable mean curve
 #' if "polygon" the mean will be piecewise linear.
 #' @param penalty the penalty to use in the covariance smoothing step. use '-1' for no penalty.
+#' @param var_type assume either "smooth" or "constant" function for variance estimate in cov surface
 #' @param max_iter maximal number of iterations
 #' @param eps the algorithm stops if L2 norm of coefficients changes less
 #' @param pfit_method temp
 #' @param pfit_pen_factor temp
+#' @param cluster a cluster object for use in the \code{bam} call
 #' @return a \code{list} with entries
 #'   \item{type}{"smooth" or "polygon"}
 #'   \item{coefs}{\code{coefs} srv spline coefficients of the estimated mean}
@@ -29,7 +31,7 @@
 #' @importFrom utils combn
 #' @importFrom splines splineDesign
 
-fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_pen_factor, max_iter, type, eps){
+fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max_iter, type, eps, cluster){
   # Initial parametrisation, rotation, scaling and coefs.
   t_optims <- lapply(srv_data_curves, function(srv_data_curve){
     c(srv_data_curve$t, 1)
@@ -76,14 +78,11 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
     cov_dat <- do.call(rbind, cov_dat)
 
     # Tensor product p-spline smoothing of the complex covariance surface.
-    cov_fit <- smooth_cov_surface(cov_dat, knots, type, penalty)
+    cov_fit <- smooth_cov_surface(cov_dat, knots, type, penalty, var_type, cluster)
 
     # Get unconstrained basis coef matrix from cov fit.
     beta.mat <- get_complex_coef_matrix(cov_fit)
     beta.mat.inv <- solve(beta.mat)
-
-    # Get white-noise variance function.
-    tau.coefs <- get_white_noise_coefs(cov_fit)
 
     # Calculate mean from pca on coefficient matrix
     pca <- eigen(t(L.inv) %*% beta.mat %*% L.inv)
@@ -129,7 +128,6 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
         "gram" = G,
         "cov_fit" = cov_fit,
         "cov_coef" = beta.mat,
-        "var_coef" = tau.coefs,
         "cov_pca" = pca,
         "pfit_coefs" = pfit_coefs,
         "G_optims" = G_optims,
@@ -150,7 +148,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
         })
       }
       return(list("type" = type, "coefs" = coefs, "knots" = knots,
-                  "t_optims" = t_optims, "fit" = fit_object))
+                  "t_optims" = t_optims, "var_type" = var_type, "fit" = fit_object))
     }
 
     # align parametrization to mean
@@ -165,14 +163,13 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, pfit_method, pfit_p
     "gram" = G,
     "cov_fit" = cov_fit,
     "cov_coef" = beta.mat,
-    "var_coef" = tau.coefs,
     "cov_pca" = pca,
     "pfit_coefs" = pfit_coefs,
     "G_optims" = G_optims,
     "b_optims" = b_optims
   )
   return(list("type" = type, "coefs" = coefs, "knots" = knots,
-              "t_optims" = t_optims, "fit" = fit_object))
+              "t_optims" = t_optims, "var_type" = var_type, "fit" = fit_object))
 }
 
 # Get inner and outer knots.
@@ -257,7 +254,7 @@ make_design <- function(t, knots, type, closed = FALSE) {
 }
 
 # Smooth cov surface using mgcv::bam with (skew)-symmetric tensor product p-splines and REML.
-smooth_cov_surface <- function(cov_dat, knots, type, penalty){
+smooth_cov_surface <- function(cov_dat, knots, type, penalty, var_type, cluster){
 
   # Parameters for covariance smoothing
   cov.m = ifelse(type == "smooth", 0, -1)  # spline degree - 1
@@ -268,17 +265,25 @@ smooth_cov_surface <- function(cov_dat, knots, type, penalty){
 
   # fit covariance surface and measurement-error variance.
   cov_fit <- list()
-  cov_fit$re <- mgcv::bam(
-    Re(qq) ~ s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx, xt = list(skew = FALSE))
-             + s(t, by = st, bs = "ps", k = cov.k, m = c(cov.m, 1), fx = cov.fx),
-    data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots)
-  )
+  if(var_type == "constant"){
+    cov_fit$re <- mgcv::bam(
+      Re(qq) ~ s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx, xt = list(skew = FALSE)) + st,
+      data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots, cluster = cluster)
+    )
+  } else {
+    cov_fit$re <- mgcv::bam(
+      Re(qq) ~ s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx, xt = list(skew = FALSE))
+      + s(t, by = st, bs = "ps", k = cov.k, m = c(cov.m, 1), fx = cov.fx),
+      data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots, cluster = cluster)
+    )
+  }
   cov_fit$im <- mgcv::bam(
     Im(qq) ~ -1 + s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx, xt = list(skew = TRUE)),
-    data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots)
+    data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots, cluster = cluster)
   )
   cov_fit
 }
+
 
 # Get coefficient matrix for pca
 get_complex_coef_matrix <- function(cov_fit){
@@ -295,19 +300,6 @@ get_coef_matrix_from_model <- function(model){
   matrix(beta, nrow=F, ncol=F)
 }
 
-
-# Get white noise variance
-get_white_noise_coefs <- function(cov_fit){
-  s <- cov_fit$re$smooth[[2]]
-  coefs_ <- coef(cov_fit$re)[s$first.para:s$last.para]
-  if(any(coefs_ < 0)){
-    warning("Coercing negative values in measurement-error variance to 0!")
-    coefs_[coefs_<0] <- 0
-  }
-  coefs_
-}
-
-
 # Calculate the unconstrained basis coefs from constrained mgcv smooth.
 get_unconstrained_basis_coefs <- function(model){
   s_ <- model$smooth[[1]]
@@ -318,7 +310,6 @@ get_unconstrained_basis_coefs <- function(model){
   knots_mid <- knots_mid[-length(knots_mid)]
   knots_all <- unique(sort(c(knots,knots_mid)))
   toy_dat <- expand.grid(s = knots_all, t = knots_all)
-  toy_dat$y <- rnorm(nrow(toy_dat))
 
   # Create toy design matrix and calculate trafo matrix.
   X <- Predict.matrix(s_, toy_dat)
@@ -333,7 +324,8 @@ get_unconstrained_basis_coefs <- function(model){
   D <- solve(crossprod(X), crossprod(X, X_))
 
   # Apply trafo to model coefs.
-  D %*% coef(model)[1:s_$last.para]  # without diagonal!
+  coef_idxs <- unique(c(1,s_$first.para:s_$last.para))  # Only intercept and tensor product smooth.
+  D %*% coef(model)[coef_idxs]
 }
 
 

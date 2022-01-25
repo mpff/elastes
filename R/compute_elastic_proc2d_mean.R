@@ -9,9 +9,11 @@
 #' @param type if "smooth" linear srv-splines are used which results in a differentiable mean curve
 #' if "polygon" the mean will be piecewise linear, if "cubic" the mean will be two times differentiable.
 #' @param penalty the penalty to use in the covariance smoothing step. use '-1' for no penalty.
+#' @param var_type (experimental) assume "smooth" or "constant" measurement-error variance along t
 #' @param eps the algorithm stops if L2 norm of coefficients changes less
 #' @param max_iter maximal number of iterations
 #' @param pfit_method (experimental) set to "smooth" for smoothing of the
+#' @param cluster (experimental) use the parallel package for faster computation
 #' data_curves
 #' @param pfit_pen_factor (experimental) controls strength of the smoothing.
 #' @return an object of class \code{elastic_proc2d_mean}, which is a \code{list}
@@ -69,8 +71,8 @@
 
 
 compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13),
-                                  type = c("smooth", "polygon"), penalty = 2, pfit_method = "linear", pfit_pen_factor = 1,
-                                  eps = 0.01, max_iter = 50) {
+                                  type = c("smooth", "polygon"), penalty = 2, var_type = "constant",
+                                  pfit_method = "polygon", eps = 0.01, max_iter = 50, cluster = NULL) {
 
   # parametrisation with respect to arc length if not given,
   # after this, parametrisation is always in the first column
@@ -98,8 +100,8 @@ compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13)
 
   # Calculate elastic full Procrustes mean
   elastic_proc2d_mean <- fit_mean_proc2d(srv_data_curves = srv_data_curves,
-                                  knots = knots, type = type, penalty = penalty, pfit_method = pfit_method, pfit_pen_factor,
-                                  max_iter = max_iter, eps = eps)
+                                  knots = knots, type = type, penalty = penalty, var_type = var_type, pfit_method = pfit_method,
+                                  max_iter = max_iter, eps = eps, cluster = cluster)
 
   # Add scaling, rotation, translation and distance attributes to the original data curves.
   data_curves <- lapply(1:length(data_curves), function(j){

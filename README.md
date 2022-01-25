@@ -7,7 +7,8 @@
 
 [![R-CMD-check](https://github.com/mpff/elasdicsproc2d/workflows/R-CMD-check/badge.svg)](https://github.com/mpff/elasdicsproc2d/actions)
 [![codecov](https://codecov.io/gh/mpff/elasdicsproc2d/branch/main/graph/badge.svg?token=p0xOHfDpnk)](https://codecov.io/gh/mpff/elasdicsproc2d)
-[![lint-project](https://github.com/mpff/elasdicsproc2d/workflows/lint-project/badge.svg)](https://github.com/mpff/elasdicsproc2d/actions)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 elasdicsproc2d is a R package to estimate elastic shape means from
@@ -66,12 +67,7 @@ elastic_proc2d_mean <- compute_elastic_proc2d_mean(
   type = "smooth",
   penalty = 2
 )
-```
-
-![](man/figures/README-example-1.png)<!-- -->
-
-``` r
 plot(elastic_proc2d_mean)
 ```
 
-![](man/figures/README-example-2.png)<!-- -->
+![](man/figures/README-example-1.png)<!-- -->
