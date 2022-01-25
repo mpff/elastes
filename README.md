@@ -37,6 +37,7 @@ curve <- function(t){
 }
 
 # randomly draw sparse spirals with noise
+set.seed(18)
 data_curves <- lapply(1:10, function(i){
   m <- sample(10:15, 1)
   delta <- abs(rnorm(m, mean = 1, sd = 0.05))
