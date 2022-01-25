@@ -2,9 +2,10 @@
 #' @description Finds optimal rotation and scaling alignment for a discrete open srv curve to a smooth curve
 #' @param q complex srv curve with parametrization, needs to be vectorised.
 #' The result of a call to \code{get_model_data_complex}
-#' @param coefs.compl complex coefficients of smooth curve
 #' @param type spline degree
 #' @param knots basis knots
+#' @param var_type either "smooth" or "constant" measurement error in cov_fit object
+#' @param coefs.compl complex coefficients of smooth curve
 #' @param method temp
 #' @param cov_fit temp
 #' @param pca temp

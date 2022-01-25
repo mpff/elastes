@@ -24,6 +24,8 @@ The result of a call to \code{get_model_data_complex}}
 
 \item{knots}{basis knots}
 
+\item{var_type}{either "smooth" or "constant" measurement error in cov_fit object}
+
 \item{coefs.compl}{complex coefficients of smooth curve}
 
 \item{method}{temp}
