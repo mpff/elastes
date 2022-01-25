@@ -19,7 +19,10 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
 
     # Get covariance eigen-basis vectors and values.
     V <- pca$vectors
-    Lmbd.inv <- diag(1/pca$values)
+    Lmbd <- pca$values
+    # ensure nonnegative definiteness
+    Lmbd[Lmbd <= 0] <- Inf
+    Lmbd.inv <- diag(1/Lmbd)
 
     # Construct design matrix in eigen-basis. (Note: L <- chol(G.inv) for Gram-Matrix G of the mean basis)
     q_B <- make_design(q$m_long, knots, type = type)
@@ -45,7 +48,7 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
 
     # Prepare output
     w <- Conj(z[1])
-    l <- c(sum(diag(S)) + t(Conj(z)) %*% z)  # length of original curve
+    l <- Re(c(sum(diag(S)) + t(Conj(z)) %*% z))  # length of original curve
     q_coefs <- t(L) %*% V %*% z
 
   } else {
