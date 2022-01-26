@@ -20,8 +20,10 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
     # Get covariance eigen-basis vectors and values.
     V <- pca$vectors
     Lmbd <- pca$values
-    # ensure nonnegative definiteness
-    Lmbd[Lmbd <= 0] <- Inf
+    # restrict basis to ensure positive definiteness
+    Lmbd <- Lmbd[pca$values > 0]
+    V <- V[ , pca$values >0]
+
     Lmbd.inv <- diag(1/Lmbd)
 
     # Construct design matrix in eigen-basis. (Note: L <- chol(G.inv) for Gram-Matrix G of the mean basis)
