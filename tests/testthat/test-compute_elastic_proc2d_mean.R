@@ -119,3 +119,73 @@ test_that("Test pfit_method = 'polygon' (depriciated): initial rot, scaling do n
   }
   expect_equal(mean1$coefs, mean3$coefs, tolerance=1e-1)
 })
+
+
+
+test_that("Test length not negative in issue #2 example.", {
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~
+  # Manuel's length estimation example   25.01.2022
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~
+  # https://github.com/mpff/elasdicsproc2d/issues/2#issue-1114129028
+
+  # define spiral curve
+  curve <- function(t) {
+    rbind(t * cos(13 * t), t * sin(13 * t))
+  }
+
+  # randomly draw sparse spirals with noise
+  set.seed(18)
+  data_curves <- lapply(1:10, function(i) {
+    m <- sample(10:15, 1)
+    delta <- abs(rnorm(m, mean = 1, sd = 0.05))
+    t <- cumsum(delta) / sum(delta)
+    data.frame(t(curve(t)) + 0.07 * t * matrix(cumsum(rnorm(2 * length(delta))),
+                                               ncol = 2
+    ))
+  })
+
+  # Use smoothing in procrustes fit calculation and re-normalisation.
+  expect_error(compute_elastic_proc2d_mean(
+    data_curves,
+    knots = seq(0, 1, length = 13),
+    type = "smooth",
+    penalty = 2,
+    var_type = "smooth",
+    pfit_method = "smooth"
+  ), NA)
+})
+
+
+test_that("Test no error for spirals with very different sparsity.", {
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~
+  # Manuel's length estimation example   25.01.2022
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~
+  # https://github.com/mpff/elasdicsproc2d/issues/2#issue-1114129028
+
+  # define spiral curve
+  curve <- function(t) {
+    rbind(t * cos(13 * t), t * sin(13 * t))
+  }
+
+  # randomly draw sparse spirals with noise
+  set.seed(18)
+  data_curves <- lapply(1:5, function(i) {
+    m <- sample(5:55, 1)
+    delta <- abs(rnorm(m, mean = 1, sd = 0.05))
+    t <- cumsum(delta) / sum(delta)
+    data.frame(t(curve(t)) + 0.07 * t * matrix(cumsum(rnorm(2 * length(delta))),
+                                               ncol = 2
+    ))
+  })
+
+  # Use smoothing in procrustes fit calculation and re-normalisation.
+  expect_error(compute_elastic_proc2d_mean(
+    data_curves,
+    knots = seq(0, 1, length = 13),
+    type = "smooth",
+    penalty = 2,
+    var_type = "smooth",
+    pfit_method = "smooth"
+  ), NA)
+})
+

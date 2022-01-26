@@ -20,7 +20,8 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
     # Get covariance eigen-basis vectors and values.
     V <- pca$vectors
     Lmbd <- pca$values
-    # restrict basis to ensure positive definiteness
+
+    # Restrict basis to ensure positive definiteness (see issue #2)
     Lmbd <- Lmbd[pca$values > 0]
     V <- V[ , pca$values >0]
 
@@ -37,7 +38,7 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
     # Construct inverse. Check for negative or zero values.
     T.inv <- 1/T_
     if(any(T_ <= 0)){
-      warning("Coercing negative/inf values in measurement-error variance to 0!")
+      warning("Coercing negative/inf values in measurement-error variance to 0! Consider setting var_type = 'constant'.")
       T.inv[T_ <= 0] <- 0
     }
     T.inv <- diag(T.inv)
@@ -70,7 +71,7 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
 
   }
 
-  # Check length is real and positive. Otherwise coerce.
+  # Check length is real and positive. (See issue #2)
   if(Mod(l) != Re(l)){
     stop(paste0("In calculation of curve length: Length is negative or imaginary. l = ", l))
   }

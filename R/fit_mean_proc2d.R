@@ -124,7 +124,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
       # Save scaling and rotation alignment, save re-normalisation.
       b_optims[[j]] <<- Mod(w)
       G_optims[[j]] <<- Arg(w)
-      l_optims_old[[j]] <- l_optims[[j]]  # b_optims and l_optims are from diff. iterations!
+      l_optims_old[[j]] <<- l_optims[[j]]  # b_optims and l_optims are from diff. iterations!
       l_optims[[j]] <<- l_optims[[j]] * l
 
       # Return SRV Procrustes Fit.
