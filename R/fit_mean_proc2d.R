@@ -21,8 +21,8 @@
 #'   \item{G_optims}{optimal rotations}
 #'   \item{b_optims}{optimal scalings}
 #'   \item{n_optims}{optimal re-normalisation}
-#'   \item{iter}{number of iterations until convergence}
 #'   \item{fit}{a \code{list} containing
+#'       \code{n_iter}{number of iterations until convergence}
 #'       \code{gram} the mean basis Gram matrix,
 #'       \code{cov_fit} the covariance smoothing objects in the final iteration,
 #'       \code{cov_pca} cov coef matrix pca object in the final iteration and
@@ -137,6 +137,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
       rownames(coefs) <- NULL
       colnames(coefs) <- colnames(srv_data_curves[[1]][,-1])
       fit_object <- list(
+        "n_iter" = i,
         "gram" = G,
         "cov_fit" = cov_fit,
         "cov_coef" = beta.mat,
@@ -173,6 +174,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
   rownames(coefs) <- NULL
   colnames(coefs) <- colnames(srv_data_curves[[1]][,-1])
   fit_object <- list(
+    "n_iter" = i,
     "gram" = G,
     "cov_fit" = cov_fit,
     "cov_coef" = beta.mat,

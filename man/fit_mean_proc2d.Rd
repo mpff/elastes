@@ -46,8 +46,8 @@ a \code{list} with entries
 \item{G_optims}{optimal rotations}
 \item{b_optims}{optimal scalings}
 \item{n_optims}{optimal re-normalisation}
-\item{iter}{number of iterations until convergence}
 \item{fit}{a \code{list} containing
+\code{n_iter}{number of iterations until convergence}
 \code{gram} the mean basis Gram matrix,
 \code{cov_fit} the covariance smoothing objects in the final iteration,
 \code{cov_pca} cov coef matrix pca object in the final iteration and
