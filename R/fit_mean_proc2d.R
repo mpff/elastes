@@ -28,7 +28,7 @@
 #'       \code{cov_pca} cov coef matrix pca object in the final iteration and
 #'       \code{pfit_coefs} the mean basis coefs of smoothed pfits in the final iteration}
 #' @importFrom orthogonalsplinebasis SplineBasis GramMatrix
-#' @importFrom utils combn
+#' @importFrom gtools combinations
 #' @importFrom splines splineDesign
 
 fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max_iter, type, eps, cluster){
