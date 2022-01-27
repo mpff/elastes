@@ -1,3 +1,11 @@
+test_that("Test default parameters don't produce errors", {
+  data_curve1 <- data.frame(x1 = sin(1:7/4*pi), x2 = cos(1:7/4*pi))
+  data_curve2 <- data.frame(x1 = sin(1:15/8*pi), x2 = cos(1:15/8*pi))
+  data_curves <- list(data_curve1, data_curve2)
+
+  expect_error(compute_elastic_proc2d_mean(data_curves), NA)
+})
+
 
 test_that("Test type = 'smooth': Initial rot, scaling do not matter much", {
   knots <- seq(0, 1, length = 11)

@@ -70,7 +70,7 @@
 
 
 compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13),
-                                  type = c("smooth", "polygon"), penalty = 2, var_type = "constant",
+                                  type = "smooth", penalty = 2, var_type = "constant",
                                   pfit_method = "polygon", eps = 0.01, max_iter = 50, cluster = NULL) {
 
   # parametrisation with respect to arc length if not given,
