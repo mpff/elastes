@@ -73,6 +73,19 @@ compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13)
                                   type = "smooth", penalty = 2, var_type = "constant",
                                   pfit_method = "polygon", eps = 0.01, max_iter = 50, cluster = NULL) {
 
+  # Input checks
+  stopifnot(all(sapply(data_curves, is.data.frame)))
+
+  # remove duplicated points
+  data_curves <- lapply(data_curves, remove_duplicate, closed = F)
+  if(sum(sapply(data_curves, function(curve){attributes(curve)$points_rm}) > 0)){
+    warning("Duplicated points in data curves have been removed!")
+  }
+  data_curves <- lapply(data_curves, function(curve){
+    attr(curve, "points_rm") <- NULL
+    curve
+  })
+
   # parametrisation with respect to arc length if not given,
   # after this, parametrisation is always in the first column
   data_curves <- lapply(data_curves, function(data_curve){
@@ -85,7 +98,7 @@ compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13)
     }
   })
 
-  ### Adjust scaling and centering of data_curves
+  # Adjust scaling and centering of data_curves
   translations <- lapply(data_curves, get_center)
   lengths <- lapply(data_curves, get_polygon_length)
   data_curves_adj <- lapply(data_curves, elasdics::center_curve)
@@ -142,3 +155,19 @@ get_center <- function(curve) {
   colMeans(curve)
 }
 
+#' Removes duplicate points. Code from \code{elasdics:::remove_duplicate}.
+#' @param curve curve data
+remove_duplicate <- function (data_curve, closed){
+  if (ncol(data_curve) == 1) {
+    attr(data_curve, "points_rm") <- FALSE
+    return(data_curve)
+  }
+  points <- as.data.frame(data_curve)
+  try(points$t <- NULL, silent = TRUE)
+  moves <- c(TRUE, rowSums(apply(points, 2, diff)^2) > max(points) *
+               .Machine$double.eps)
+  data_curve <- data_curve[moves, ]
+  attr(data_curve, "points_rm") <- !all(moves)
+  if (!is.null(data_curve$t) & !closed)
+    data_curve$t[nrow(data_curve)] <- 1
+  data_curve
