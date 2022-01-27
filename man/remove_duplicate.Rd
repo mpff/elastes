@@ -7,6 +7,8 @@
 remove_duplicate(data_curve, closed)
 }
 \arguments{
+\item{closed}{TRUE if curve is closed (not implemented yet)}
+
 \item{curve}{curve data}
 }
 \description{

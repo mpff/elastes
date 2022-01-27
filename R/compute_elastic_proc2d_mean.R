@@ -161,7 +161,8 @@ get_center <- function(curve) {
 }
 
 #' Removes duplicate points. Code from \code{elasdics:::remove_duplicate}.
-#' @param curve curve data
+#' @param data_curve curve data
+#' @param closed TRUE if curve is closed (not implemented yet)
 remove_duplicate <- function (data_curve, closed){
   if (ncol(data_curve) == 1) {
     attr(data_curve, "points_rm") <- FALSE
