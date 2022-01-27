@@ -112,8 +112,12 @@ compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13)
     data.frame("t" = data_curves_adj[[i]]$t, data_curves_adj[[i]][,-1]/lengths[[i]])
   })
 
+  if(length(unique(sapply(data_curves, ncol))) != 1) stop("All curves must have same number of dimensions!")
+
   # Calculate normalized SRV data curves. (Note: Normalization comes from unit-length of the data_curves_adj!)
   srv_data_curves <- lapply(data_curves_adj, elasdics::get_srv_from_points)
+
+  if(ncol(srv_data_curves[[1]]) != 3) stop("This package was designed to analyse only planar curve data!")
 
   # Calculate elastic full Procrustes mean
   elastic_proc2d_mean <- fit_mean_proc2d(srv_data_curves = srv_data_curves,
@@ -177,3 +181,5 @@ remove_duplicate <- function (data_curve, closed){
   if (!is.null(data_curve$t) & !closed)
     data_curve$t[nrow(data_curve)] <- 1
   data_curve
+}
+

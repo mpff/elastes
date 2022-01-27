@@ -7,9 +7,9 @@
 remove_duplicate(data_curve, closed)
 }
 \arguments{
-\item{closed}{TRUE if curve is closed (not implemented yet)}
+\item{data_curve}{curve data}
 
-\item{curve}{curve data}
+\item{closed}{TRUE if curve is closed (not implemented yet)}
 }
 \description{
 Removes duplicate points. Code from \code{elasdics:::remove_duplicate}.
