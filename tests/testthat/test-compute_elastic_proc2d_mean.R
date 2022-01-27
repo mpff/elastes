@@ -1,9 +1,36 @@
-test_that("Test default parameters don't produce errors", {
+test_that("Test default arguments don't produce errors", {
   data_curve1 <- data.frame(x1 = sin(1:7/4*pi), x2 = cos(1:7/4*pi))
   data_curve2 <- data.frame(x1 = sin(1:15/8*pi), x2 = cos(1:15/8*pi))
   data_curves <- list(data_curve1, data_curve2)
 
-  expect_error(compute_elastic_proc2d_mean(data_curves), NA)
+  mean <- expect_error(compute_elastic_proc2d_mean(data_curves), NA)
+})
+
+test_that("Test arguments are correctly applied", {
+  data_curve1 <- data.frame(x1 = sin(1:7/4*pi), x2 = cos(1:7/4*pi))
+  data_curve2 <- data.frame(x1 = sin(1:15/8*pi), x2 = cos(1:15/8*pi))
+  data_curves <- list(data_curve1, data_curve2)
+
+  mean <- compute_elastic_proc2d_mean(data_curves)
+  expect_equal(mean$type, "smooth")
+  expect_equal(mean$penalty, 2)
+  expect_equal(mean$knots, seq(0, 1, len = 13))
+  expect_equal(mean$var_type, "smooth")
+  expect_equal(mean$pfit_method, "smooth")
+
+  mean <- compute_elastic_proc2d_mean(
+    data_curves,
+    type = "polygon",
+    penalty = 1,
+    knots = seq(0, 1, len = 5),
+    var_type = "constant",
+    pfit_method = "polygon"
+    )
+  expect_equal(mean$type, "polygon")
+  expect_equal(mean$penalty, 1)
+  expect_equal(mean$knots, seq(0, 1, len = 5))
+  expect_equal(mean$var_type, "constant")
+  expect_equal(mean$pfit_method, "polygon")
 })
 
 
@@ -162,38 +189,3 @@ test_that("Test length not negative in issue #2 example.", {
     pfit_method = "smooth"
   ), NA)
 })
-
-
-test_that("Test no error for spirals with very different sparsity.", {
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~
-  # Manuel's length estimation example   25.01.2022
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~
-  # https://github.com/mpff/elasdicsproc2d/issues/2#issue-1114129028
-
-  # define spiral curve
-  curve <- function(t) {
-    rbind(t * cos(13 * t), t * sin(13 * t))
-  }
-
-  # randomly draw sparse spirals with noise
-  set.seed(18)
-  data_curves <- lapply(1:5, function(i) {
-    m <- sample(5:55, 1)
-    delta <- abs(rnorm(m, mean = 1, sd = 0.05))
-    t <- cumsum(delta) / sum(delta)
-    data.frame(t(curve(t)) + 0.07 * t * matrix(cumsum(rnorm(2 * length(delta))),
-                                               ncol = 2
-    ))
-  })
-
-  # Use smoothing in procrustes fit calculation and re-normalisation.
-  expect_error(compute_elastic_proc2d_mean(
-    data_curves,
-    knots = seq(0, 1, length = 13),
-    type = "smooth",
-    penalty = 2,
-    var_type = "smooth",
-    pfit_method = "smooth"
-  ), NA)
-})
-

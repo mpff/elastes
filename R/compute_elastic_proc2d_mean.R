@@ -70,11 +70,16 @@
 
 
 compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13),
-                                  type = "smooth", penalty = 2, var_type = "constant",
-                                  pfit_method = "polygon", eps = 0.01, max_iter = 50, cluster = NULL) {
+                                  type = c("smooth", "polygon"), penalty = 2, var_type = c("smooth", "constant"),
+                                  pfit_method = c("smooth", "polygon"), eps = 0.01, max_iter = 50, cluster = NULL) {
 
   # Input checks
   stopifnot(all(sapply(data_curves, is.data.frame)))
+
+  # Match arguments
+  type <- match.arg(type, c("smooth", "polygon"))
+  var_type <- match.arg(var_type, c("smooth", "constant"))
+  pfit_method <- match.arg(pfit_method, c("smooth", "polygon"))
 
   # remove duplicated points
   data_curves <- lapply(data_curves, remove_duplicate, closed = F)

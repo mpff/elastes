@@ -161,8 +161,9 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
           t_optim
         })
       }
-      return(list("type" = type, "coefs" = coefs, "knots" = knots,
-                  "t_optims" = t_optims, "var_type" = var_type, "fit" = fit_object))
+      return(list("type" = type, "knots" = knots, "penalty" = penalty,
+                  "var_type" = var_type, "pfit_method" = pfit_method,
+                  "coefs" = coefs, "t_optims" = t_optims, "fit" = fit_object))
     }
 
     # align parametrization to mean
@@ -184,8 +185,9 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
     "b_optims" = b_optims,
     "l_optims" = l_optims_old
   )
-  return(list("type" = type, "coefs" = coefs, "knots" = knots,
-              "t_optims" = t_optims, "var_type" = var_type, "fit" = fit_object))
+  return(list("type" = type, "knots" = knots, "penalty" = penalty,
+              "var_type" = var_type, "pfit_method" = pfit_method,
+              "coefs" = coefs, "t_optims" = t_optims, "fit" = fit_object))
 }
 
 

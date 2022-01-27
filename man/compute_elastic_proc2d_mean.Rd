@@ -9,8 +9,8 @@ compute_elastic_proc2d_mean(
   knots = seq(0, 1, len = 13),
   type = c("smooth", "polygon"),
   penalty = 2,
-  var_type = "constant",
-  pfit_method = "polygon",
+  var_type = c("smooth", "constant"),
+  pfit_method = c("smooth", "polygon"),
   eps = 0.01,
   max_iter = 50,
   cluster = NULL
