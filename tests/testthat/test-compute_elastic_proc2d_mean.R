@@ -1,9 +1,10 @@
-test_that("Test default arguments don't produce errors", {
+test_that("Test default arguments don't produce errors or warnings", {
   data_curve1 <- data.frame(x1 = sin(1:7/4*pi), x2 = cos(1:7/4*pi))
   data_curve2 <- data.frame(x1 = sin(1:15/8*pi), x2 = cos(1:15/8*pi))
   data_curves <- list(data_curve1, data_curve2)
 
-  mean <- expect_error(compute_elastic_proc2d_mean(data_curves), NA)
+  expect_error(compute_elastic_proc2d_mean(data_curves), NA)
+  expect_warning(compute_elastic_proc2d_mean(data_curves), NA)
 })
 
 test_that("Test arguments are correctly applied", {
@@ -17,6 +18,7 @@ test_that("Test arguments are correctly applied", {
   expect_equal(mean$knots, seq(0, 1, len = 13))
   expect_equal(mean$var_type, "smooth")
   expect_equal(mean$pfit_method, "smooth")
+  expect_equal(sapply(seq_len(10), FUN = mean$smooth_warp), rep(0, len = 10))
 
   mean <- compute_elastic_proc2d_mean(
     data_curves,
@@ -24,13 +26,16 @@ test_that("Test arguments are correctly applied", {
     penalty = 1,
     knots = seq(0, 1, len = 5),
     var_type = "constant",
-    pfit_method = "polygon"
-    )
+    pfit_method = "polygon",
+    smooth_warp = function(i) 1
+  )
   expect_equal(mean$type, "polygon")
   expect_equal(mean$penalty, 1)
   expect_equal(mean$knots, seq(0, 1, len = 5))
   expect_equal(mean$var_type, "constant")
   expect_equal(mean$pfit_method, "polygon")
+  expect_equal(sapply(seq_len(10), FUN = mean$smooth_warp), rep(1, len = 10))
+
 })
 
 

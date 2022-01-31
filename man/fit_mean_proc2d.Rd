@@ -13,7 +13,8 @@ fit_mean_proc2d(
   max_iter,
   type,
   eps,
-  cluster
+  cluster,
+  smooth_warp
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ if "polygon" the mean will be piecewise linear.}
 \item{eps}{the algorithm stops if L2 norm of coefficients changes less}
 
 \item{cluster}{a cluster object for use in the \code{bam} call}
+
+\item{smooth_warp}{a function controling the weighting between smoothed and sparse observations}
 }
 \value{
 a \code{list} with entries

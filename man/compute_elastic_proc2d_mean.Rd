@@ -13,6 +13,7 @@ compute_elastic_proc2d_mean(
   pfit_method = c("smooth", "polygon"),
   eps = 0.01,
   max_iter = 50,
+  smooth_warp = function(i) 0,
   cluster = NULL
 )
 }
@@ -36,8 +37,10 @@ if "polygon" the mean will be piecewise linear, if "cubic" the mean will be two 
 
 \item{max_iter}{maximal number of iterations}
 
-\item{cluster}{(experimental) use the parallel package for faster computation
-data_curves}
+\item{smooth_warp}{(experimental) controls the weighting of original and smoothed observations
+over the iterations, if pfit_method == "smooth".}
+
+\item{cluster}{(experimental) use the parallel package for faster computation}
 }
 \value{
 an object of class \code{elastic_proc2d_mean}, which is a \code{list}

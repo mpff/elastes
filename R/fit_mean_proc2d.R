@@ -12,6 +12,7 @@
 #' @param eps the algorithm stops if L2 norm of coefficients changes less
 #' @param pfit_method temp
 #' @param cluster a cluster object for use in the \code{bam} call
+#' @param smooth_warp a function controling the weighting between smoothed and sparse observations
 #' @return a \code{list} with entries
 #'   \item{type}{"smooth" or "polygon"}
 #'   \item{coefs}{\code{coefs} srv spline coefficients of the estimated mean}
@@ -31,7 +32,7 @@
 #' @importFrom gtools combinations
 #' @importFrom splines splineDesign
 
-fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max_iter, type, eps, cluster){
+fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max_iter, type, eps, cluster, smooth_warp){
   # Initial parametrisation, rotation, scaling and coefs.
   t_optims <- lapply(srv_data_curves, function(srv_data_curve){
     c(srv_data_curve$t, 1)
@@ -110,6 +111,13 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
       l <- pfit_prods$l  # length(beta)
       pfit_coefs[[j]] <<- pfit_prods$q_coefs
 
+      # Save scaling and rotation alignment, save re-normalisation.
+      b_optims[[j]] <<- Mod(w)
+      G_optims[[j]] <<- Arg(w)
+      l_optims_old[[j]] <<- l_optims[[j]]  # b_optims and l_optims are from diff. iterations!
+      l_optims[[j]] <<- l_optims[[j]] * l
+
+      # Apply alignment.
       # SRV curve to complex.
       srv_complex <- complex(real = srv_data_curves[[j]][,2], imaginary = srv_data_curves[[j]][,3])
 
@@ -118,14 +126,16 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
       srv_data_curves[[j]][,2] <<- Re(srv_complex)
       srv_data_curves[[j]][,3] <<- Im(srv_complex)
 
+      # Blend between smoothed and original curves for warping alignment step.
+      if(pfit_method == "smooth"){
+        q_coefs_norm <- sqrt(t(Conj(pfit_prods$q_coefs)) %*% G %*% pfit_prods$q_coefs)
+        q_coefs_normed <- pfit_prods$q_coefs / c(q_coefs_norm)
+        srv_complex_smooth <- make_design(srv_data_curves[[j]][,1], knots, type) %*% q_coefs_normed
+        srv_complex <- (1-smooth_warp(i)) * srv_complex + smooth_warp(i) * srv_complex_smooth
+      }
+
       # Calculate rotation aligned and re-normalized SRV curve.
       pfit <- c(w/Mod(w)) * srv_complex  # rotation alignment
-
-      # Save scaling and rotation alignment, save re-normalisation.
-      b_optims[[j]] <<- Mod(w)
-      G_optims[[j]] <<- Arg(w)
-      l_optims_old[[j]] <<- l_optims[[j]]  # b_optims and l_optims are from diff. iterations!
-      l_optims[[j]] <<- l_optims[[j]] * l
 
       # Return SRV Procrustes Fit.
       data.frame(t = srv_data_curves[[j]][,1], X1 = Re(pfit), X2 = Im(pfit))
@@ -162,7 +172,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
         })
       }
       return(list("type" = type, "knots" = knots, "penalty" = penalty,
-                  "var_type" = var_type, "pfit_method" = pfit_method,
+                  "var_type" = var_type, "pfit_method" = pfit_method, "smooth_warp" = smooth_warp,
                   "coefs" = coefs, "t_optims" = t_optims, "fit" = fit_object))
     }
 
@@ -186,7 +196,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
     "l_optims" = l_optims_old
   )
   return(list("type" = type, "knots" = knots, "penalty" = penalty,
-              "var_type" = var_type, "pfit_method" = pfit_method,
+              "var_type" = var_type, "pfit_method" = pfit_method, "smooth_warp" = smooth_warp,
               "coefs" = coefs, "t_optims" = t_optims, "fit" = fit_object))
 }
 

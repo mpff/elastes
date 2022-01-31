@@ -14,7 +14,8 @@
 #' @param eps the algorithm stops if L2 norm of coefficients changes less
 #' @param max_iter maximal number of iterations
 #' @param cluster (experimental) use the parallel package for faster computation
-#' data_curves
+#' @param smooth_warp (experimental) controls the weighting of original and smoothed observations
+#' over the iterations, if pfit_method == "smooth".
 #' @return an object of class \code{elastic_proc2d_mean}, which is a \code{list}
 #' with entries
 #'   \item{type}{"smooth" if mean was modeled using linear srv-splines,
@@ -71,7 +72,8 @@
 
 compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13),
                                   type = c("smooth", "polygon"), penalty = 2, var_type = c("smooth", "constant"),
-                                  pfit_method = c("smooth", "polygon"), eps = 0.01, max_iter = 50, cluster = NULL) {
+                                  pfit_method = c("smooth", "polygon"), eps = 0.01, max_iter = 50,
+                                  smooth_warp = function(i) 0, cluster = NULL) {
 
   # Input checks
   stopifnot(all(sapply(data_curves, is.data.frame)))
@@ -122,7 +124,7 @@ compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13)
   # Calculate elastic full Procrustes mean
   elastic_proc2d_mean <- fit_mean_proc2d(srv_data_curves = srv_data_curves,
                                   knots = knots, type = type, penalty = penalty, var_type = var_type, pfit_method = pfit_method,
-                                  max_iter = max_iter, eps = eps, cluster = cluster)
+                                  max_iter = max_iter, eps = eps, cluster = cluster, smooth_warp = smooth_warp)
 
   # Add scaling, rotation, translation and distance attributes to the original data curves.
   data_curves <- lapply(1:length(data_curves), function(j){
