@@ -18,11 +18,12 @@
 #'   \item{coefs}{\code{coefs} srv spline coefficients of the estimated mean}
 #'   \item{knots}{spline knots}
 #'   \item{penalty}{penalty usedin the covariance estimation}
-#'   \item{t_optims}{optimal parametrisations}
-#'   \item{G_optims}{optimal rotations}
-#'   \item{b_optims}{optimal scalings}
-#'   \item{n_optims}{optimal re-normalisation}
+#'   \item{distances}{distances to mean}
 #'   \item{fit}{a \code{list} containing
+#'       \code{t_optims}{optimal parametrisations}
+#'       \code{G_optims}{optimal rotations}
+#'       \code{b_optims}{optimal scalings}
+#'       \code{n_optims}{optimal re-normalisation}
 #'       \code{n_iter}{number of iterations until convergence}
 #'       \code{gram} the mean basis Gram matrix,
 #'       \code{cov_fit} the covariance smoothing objects in the final iteration,
@@ -43,6 +44,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
   l_optims_old <- as.list(rep(1, length(srv_data_curves)))
   coefs <- 0
   pfit_coefs <- as.list(rep(0, length(srv_data_curves)))
+  distances <- rep(1, length(srv_data_curves))
 
   # Get Gram and orthogonal trafo matrix for the mean basis.
   G <- get_gram_matrix(knots, type)
@@ -110,6 +112,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
       w <- pfit_prods$w  # Conj(z1)
       l <- pfit_prods$l  # length(beta)
       pfit_coefs[[j]] <<- pfit_prods$q_coefs
+      S <- pfit_prods$S
 
       # Save scaling and rotation alignment, save re-normalisation.
       b_optims[[j]] <<- Mod(w)
@@ -126,6 +129,8 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
       srv_data_curves[[j]][,2] <<- Re(srv_complex)
       srv_data_curves[[j]][,3] <<- Im(srv_complex)
 
+
+
       # Blend between smoothed and original curves for warping alignment step.
       if(pfit_method == "smooth"){
         q_coefs_norm <- sqrt(t(Conj(pfit_prods$q_coefs)) %*% G %*% pfit_prods$q_coefs)
@@ -138,7 +143,21 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
       pfit <- c(w/Mod(w)) * srv_complex  # rotation alignment
 
       # Return SRV Procrustes Fit.
-      data.frame(t = srv_data_curves[[j]][,1], X1 = Re(pfit), X2 = Im(pfit))
+      srv_procrustes_curve <- data.frame(t = srv_data_curves[[j]][,1], X1 = Re(pfit), X2 = Im(pfit))
+
+      # Update distance to mean
+      if(pfit_method == "smooth"){
+        distances[[j]] <<- 1 - Mod(diag(S)[1] + c(Conj(w) * w)/l)
+      } else {
+        distances[[j]] <- get_distance(
+          srv_curve = function(t) t(make_design(t, knots=knots, type=type) %*% coefs),
+          s = c(srv_procrustes_curve$t, 1),
+          q = t(srv_procrustes_curve[,-1]),
+          eps = eps*100/i
+        )
+      }
+
+      srv_procrustes_curve
     })
 
     #Stop if coefficients didn't change by much.
@@ -157,23 +176,9 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
         "b_optims" = b_optims,
         "l_optims" = l_optims_old
       )
-      if(max_iter == 0){
-        # need to calculate dist_to_mean. This is for full procrustes fits (w.o. warping)!
-        t_optims <- lapply(1:length(t_optims), function(j){
-          dist <- get_distance(
-            srv_curve = function(t) t(make_design(t, knots=knots, type=type) %*% coefs),
-            s = c(srv_procrustes_curves[[j]]$t, 1),
-            q = t(srv_procrustes_curves[[j]][,-1]),
-            eps = eps*100/i
-          )
-          t_optim <- t_optims[[j]]
-          attr(t_optim, "dist_to_mean") <- dist
-          t_optim
-        })
-      }
       return(list("type" = type, "knots" = knots, "penalty" = penalty,
                   "var_type" = var_type, "pfit_method" = pfit_method, "smooth_warp" = smooth_warp,
-                  "coefs" = coefs, "t_optims" = t_optims, "fit" = fit_object))
+                  "coefs" = coefs, "t_optims" = t_optims, "fit" = fit_object, "distances" = distances))
     }
 
     # align parametrization to mean
@@ -197,7 +202,7 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
   )
   return(list("type" = type, "knots" = knots, "penalty" = penalty,
               "var_type" = var_type, "pfit_method" = pfit_method, "smooth_warp" = smooth_warp,
-              "coefs" = coefs, "t_optims" = t_optims, "fit" = fit_object))
+              "coefs" = coefs, "t_optims" = t_optims, "fit" = fit_object, "distances" = distances))
 }
 
 

@@ -68,6 +68,7 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
     w <- sum(qm_ints)
     l <- sum(diff(m) * Conj(q$q_m_long) * q$q_m_long)
     q_coefs <- NULL
+    S <- NULL
 
   }
 
@@ -77,7 +78,7 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
   }
 
   # Return
-  list("w" = w, "l" = Re(l), "q_coefs" = q_coefs)
+  list("w" = w, "l" = Re(l), "q_coefs" = q_coefs, "S" = S)
 }
 
 

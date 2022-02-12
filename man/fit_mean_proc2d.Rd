@@ -45,11 +45,12 @@ a \code{list} with entries
 \item{coefs}{\code{coefs} srv spline coefficients of the estimated mean}
 \item{knots}{spline knots}
 \item{penalty}{penalty usedin the covariance estimation}
-\item{t_optims}{optimal parametrisations}
-\item{G_optims}{optimal rotations}
-\item{b_optims}{optimal scalings}
-\item{n_optims}{optimal re-normalisation}
+\item{distances}{distances to mean}
 \item{fit}{a \code{list} containing
+\code{t_optims}{optimal parametrisations}
+\code{G_optims}{optimal rotations}
+\code{b_optims}{optimal scalings}
+\code{n_optims}{optimal re-normalisation}
 \code{n_iter}{number of iterations until convergence}
 \code{gram} the mean basis Gram matrix,
 \code{cov_fit} the covariance smoothing objects in the final iteration,

@@ -2,10 +2,12 @@ data_curve1 <- data.frame(x1 = sin(1:7/4*pi), x2 = cos(1:7/4*pi))
 data_curve2 <- data.frame(x1 = sin(1:15/8*pi), x2 = cos(1:15/8*pi))
 data_curves <- list(data_curve1, data_curve2)
 
+
 test_that("Test default arguments don't produce errors or warnings", {
   expect_error(compute_elastic_proc2d_mean(data_curves), NA)
   expect_warning(compute_elastic_proc2d_mean(data_curves), NA)
 })
+
 
 test_that("Test arguments are correctly applied", {
 
@@ -40,6 +42,22 @@ test_that("Test computed variance in [0,1]", {
   mean <- compute_elastic_proc2d_mean(data_curves)
   expect_gt(mean$variance, 0)
   expect_lte(mean$variance, 1)
+})
+
+
+test_that("Test mean has distances in [0,1]", {
+  mean <- compute_elastic_proc2d_mean(data_curves, max_iter = 0)
+  for (d in mean$distances) {
+    expect_gte(d, 0)
+    expect_lte(d, 1)
+  }
+})
+
+
+test_that("Test unelastic full procrustes mean has distances", {
+  mean <- compute_elastic_proc2d_mean(data_curves, max_iter = 0)
+  expect_equal(mean$data_curves[[1]]$t, mean$data_curves[[1]]$t_optim)
+  expect_false(is.null(attr(mean$data_curves[[1]], "dist_to_mean")))
 })
 
 
