@@ -1,16 +1,13 @@
-test_that("Test default arguments don't produce errors or warnings", {
-  data_curve1 <- data.frame(x1 = sin(1:7/4*pi), x2 = cos(1:7/4*pi))
-  data_curve2 <- data.frame(x1 = sin(1:15/8*pi), x2 = cos(1:15/8*pi))
-  data_curves <- list(data_curve1, data_curve2)
+data_curve1 <- data.frame(x1 = sin(1:7/4*pi), x2 = cos(1:7/4*pi))
+data_curve2 <- data.frame(x1 = sin(1:15/8*pi), x2 = cos(1:15/8*pi))
+data_curves <- list(data_curve1, data_curve2)
 
+test_that("Test default arguments don't produce errors or warnings", {
   expect_error(compute_elastic_proc2d_mean(data_curves), NA)
   expect_warning(compute_elastic_proc2d_mean(data_curves), NA)
 })
 
 test_that("Test arguments are correctly applied", {
-  data_curve1 <- data.frame(x1 = sin(1:7/4*pi), x2 = cos(1:7/4*pi))
-  data_curve2 <- data.frame(x1 = sin(1:15/8*pi), x2 = cos(1:15/8*pi))
-  data_curves <- list(data_curve1, data_curve2)
 
   mean <- compute_elastic_proc2d_mean(data_curves)
   expect_equal(mean$type, "smooth")
@@ -39,15 +36,20 @@ test_that("Test arguments are correctly applied", {
 })
 
 
+test_that("Test computed variance in [0,1]", {
+  mean <- compute_elastic_proc2d_mean(data_curves)
+  expect_gt(mean$variance, 0)
+  expect_lte(mean$variance, 1)
+})
+
+
 test_that("Test type = 'smooth': Initial rot, scaling do not matter much", {
   knots <- seq(0, 1, length = 11)
-  data_curve1 <- data.frame(x1 = sin(1:7/4*pi), x2 = cos(1:7/4*pi))  # unscaled, unrotated
 
   # Apply rot, scaling to data_curve2
   beta <- 2.5
   theta <- 0.7*pi
   rot <- matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)), nrow = 2, ncol = 2)
-  data_curve2 <- data_curve <- beta * data.frame(x1 = sin(1:15/8*pi), x2 = cos(1:15/8*pi))
   data_curve2 <- as.matrix(data_curve2) %*% t(rot)
   data_curve2 <- as.data.frame(data_curve2)
   colnames(data_curve2) <- c("x1","x2")
@@ -82,13 +84,11 @@ test_that("Test type = 'smooth': Initial rot, scaling do not matter much", {
 
 test_that("Test type = 'polygon': initial rot, scaling do not matter much", {
   knots <- seq(0, 1, length = 16)
-  data_curve1 <- data.frame(x1 = sin(1:7/4*pi), x2 = cos(1:7/4*pi))  # unscaled, unrotated
 
   # Apply rot, scaling to data_curve2
   beta <- 2.5
   theta <- 0.7*pi
   rot <- matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)), nrow = 2, ncol = 2)
-  data_curve2 <- data_curve <- beta * data.frame(x1 = sin(1:15/8*pi), x2 = cos(1:15/8*pi))
   data_curve2 <- as.matrix(data_curve2) %*% t(rot)
   data_curve2 <- as.data.frame(data_curve2)
   colnames(data_curve2) <- c("x1","x2")
@@ -122,13 +122,11 @@ test_that("Test type = 'polygon': initial rot, scaling do not matter much", {
 
 test_that("Test pfit_method = 'polygon' (depriciated): initial rot, scaling do not matter much", {
   knots <- seq(0, 1, length = 11)
-  data_curve1 <- data.frame(x1 = sin(1:7/4*pi), x2 = cos(1:7/4*pi))  # unscaled, unrotated
 
   # Apply rot, scaling to data_curve2
   beta <- 2.5
   theta <- 0.7*pi
   rot <- matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)), nrow = 2, ncol = 2)
-  data_curve2 <- data_curve <- beta * data.frame(x1 = sin(1:15/8*pi), x2 = cos(1:15/8*pi))
   data_curve2 <- as.matrix(data_curve2) %*% t(rot)
   data_curve2 <- as.data.frame(data_curve2)
   colnames(data_curve2) <- c("x1","x2")

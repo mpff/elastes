@@ -22,6 +22,7 @@
 #'   "polygon" if constant srv-splines or "cubic" if quadratic srv-splines are used}
 #'   \item{coefs}{spline coeffiecients}
 #'   \item{knots}{spline knots}
+#'   \item{variance}{sample shape variance}
 #'   \item{data_curves}{list of \code{data.frame}s with observed points in each row.
 #'   First variable \code{t} gives the initial parametrisation, second variable \code{t_optim}
 #'   the optimal parametrisation when the curve is aligned to the mean. Has the
@@ -29,9 +30,7 @@
 #'   \code{\link{get_procrustes_fit}} to get the elastic full Procrustes fit.}
 #'  \item{fit}{see \code{fit_mean_proc2d}}
 #' @export
-#' @import elasdics
-#' @import mgcv
-#' @import sparseFLMM
+#' @import elasdics mgcv sparseFLMM
 #' @examples
 #' curve <- function(t){
 #'   rbind(t*cos(13*t), t*sin(13*t))
@@ -139,10 +138,16 @@ compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13)
     data_curve
   })
 
+  # Calculate variance.
+  eigenvals <- elastic_proc2d_mean$fit$cov_pca$values
+  eigenvals <- eigenvals[eigenvals > 0]
+  variance <- 1 - eigenvals[1]/sum(eigenvals)
+
   # Return
   elastic_proc2d_mean$data_curves <- data_curves
   elastic_proc2d_mean$shift_idxs <- NULL
   elastic_proc2d_mean$t_optims <- NULL
+  elastic_proc2d_mean$variance <- variance
   class(elastic_proc2d_mean) <- "elastic_proc2d_mean"
   elastic_proc2d_mean
 }

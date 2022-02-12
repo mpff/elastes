@@ -49,6 +49,7 @@ with entries
 "polygon" if constant srv-splines or "cubic" if quadratic srv-splines are used}
 \item{coefs}{spline coeffiecients}
 \item{knots}{spline knots}
+\item{variance}{sample shape variance}
 \item{data_curves}{list of \code{data.frame}s with observed points in each row.
 First variable \code{t} gives the initial parametrisation, second variable \code{t_optim}
 the optimal parametrisation when the curve is aligned to the mean. Has the
