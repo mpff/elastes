@@ -54,10 +54,20 @@ test_that("Test mean has distances in [0,1]", {
 })
 
 
+test_that("Test variance == sum-of-squared distances / N", {
+  mean <- compute_elastic_proc2d_mean(data_curves, max_iter = 0)
+  ssdn <- sum(mean$distances^2)/(length(mean$distances) - 1)
+  expect_equal(mean$variance, ssdn)
+})
+
+
 test_that("Test unelastic full procrustes mean has distances", {
   mean <- compute_elastic_proc2d_mean(data_curves, max_iter = 0)
   expect_equal(mean$data_curves[[1]]$t, mean$data_curves[[1]]$t_optim)
   expect_false(is.null(attr(mean$data_curves[[1]], "dist_to_mean")))
+  mean2 <- compute_elastic_proc2d_mean(data_curves, max_iter = 0, pfit_method = "polygon")
+  expect_equal(mean2$data_curves[[1]]$t, mean2$data_curves[[1]]$t_optim)
+  expect_false(is.null(attr(mean2$data_curves[[1]], "dist_to_mean")))
 })
 
 

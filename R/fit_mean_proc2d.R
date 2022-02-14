@@ -112,7 +112,6 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
       w <- pfit_prods$w  # Conj(z1)
       l <- pfit_prods$l  # length(beta)
       pfit_coefs[[j]] <<- pfit_prods$q_coefs
-      S <- pfit_prods$S
 
       # Save scaling and rotation alignment, save re-normalisation.
       b_optims[[j]] <<- Mod(w)
@@ -128,8 +127,6 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
       srv_complex <- c(1/sqrt(l)) * srv_complex
       srv_data_curves[[j]][,2] <<- Re(srv_complex)
       srv_data_curves[[j]][,3] <<- Im(srv_complex)
-
-
 
       # Blend between smoothed and original curves for warping alignment step.
       if(pfit_method == "smooth"){
@@ -147,7 +144,8 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
 
       # Update distance to mean
       if(pfit_method == "smooth"){
-        distances[[j]] <<- 1 - Mod(diag(S)[1] + c(Conj(w) * w)/l)
+        S <- pfit_prods$S
+        distances[[j]] <<- sqrt(1 - Mod(S[1,1] + c(w * Conj(w))/l))
       } else {
         distances[[j]] <- get_distance(
           srv_curve = function(t) t(make_design(t, knots=knots, type=type) %*% coefs),
