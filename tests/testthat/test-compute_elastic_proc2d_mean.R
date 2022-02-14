@@ -56,8 +56,8 @@ test_that("Test mean has distances in [0,1]", {
 
 test_that("Test variance == sum-of-squared distances / N", {
   mean <- compute_elastic_proc2d_mean(data_curves, max_iter = 0)
-  ssdn <- sum(mean$distances^2)/(length(mean$distances) - 1)
-  expect_equal(mean$variance, ssdn)
+  ssdn <- sum(mean$distances^2)*2/(length(mean$distances)*(length(mean$distances) - 1))
+  expect_equal(mean$variance, ssdn, tolerance = 1e-1)
 })
 
 
