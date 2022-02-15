@@ -24,8 +24,8 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
     # Restrict basis to ensure positive definiteness (see issue #2)
     Lmbd <- Lmbd[pca$values > 0]
     V <- V[ , pca$values >0]
-
-    Lmbd.inv <- diag(1/Lmbd)
+    # Ensure correct Lmbd.inv matrix when only one eigenvalue (see issue #8)
+    Lmbd.inv <- ifelse(length(Lmbd) == 1, matrix(1/Lmbd), diag(1/Lmbd))
 
     # Construct design matrix in eigen-basis. (Note: L <- chol(G.inv) for Gram-Matrix G of the mean basis)
     q_B <- make_design(q$m_long, knots, type = type)

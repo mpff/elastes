@@ -220,3 +220,36 @@ test_that("Test length not negative in issue #2 example.", {
     pfit_method = "smooth"
   ), NA)
 })
+
+
+test_that("Test variance negative/inf in issue #8 example.", {
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~
+  # Manuel's negative variance example   15.02.2022
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~
+  # https://github.com/mpff/elasdicsproc2d/issues/8
+
+  # define curve
+  curve <- function(t) {
+    rbind(t * cos(2 * t), t * sin(2 * t))
+  }
+
+  # randomly draw sparse spirals with noise
+  set.seed(2018)
+  data_curves <- lapply(1:4, function(i) {
+    m <- sample(10:15, 1)
+    delta <- abs(rnorm(m, mean = 1, sd = 0.05))
+    t <- cumsum(delta) / sum(delta)
+    data.frame(t(curve(t)) + 0.07 * t * matrix(cumsum(rnorm(2 * length(delta))),
+                                               ncol = 2
+    ))
+  })
+
+  # Use smoothing in procrustes fit calculation and re-normalisation.
+  expect_warning(compute_elastic_proc2d_mean(
+    data_curves,
+    knots = seq(0, 1, length = 11),
+    type = "smooth",
+    penalty = 2,
+    var_type = "smooth",
+    pfit_method = "smooth"
+  ), NA)
