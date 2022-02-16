@@ -38,8 +38,11 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
     # Construct inverse. Check for negative or zero values.
     T.inv <- 1/T_
     if(any(T_ <= 0)){
-      warning("Coercing negative/inf values in measurement-error variance to 0! Consider setting var_type = 'constant'.")
-      T.inv[T_ <= 0] <- 0
+      warning(
+        "Found negative values in estimated measurement-error variance tau^2(t)!  Coercing tau^2(t) to its expected positive value! Consider setting var_type = 'constant'."
+      )
+      SE_ <- predict(cov_fit$re, data.frame(t=q$m_long, s=q$m_long, st=1), type = "terms", se.fit = T)$se.fit[,s_index]
+      T.inv <- 1/(T_ + SE_ * dnorm(-T_/SE_)/(1 - pnorm(-T_/SE_)))  # trunc. normal dist.; see #8
     }
     T.inv <- diag(T.inv)
 
