@@ -13,7 +13,7 @@ compute_elastic_proc2d_mean(
   pfit_method = c("smooth", "polygon"),
   eps = 0.01,
   max_iter = 50,
-  smooth_warp = function(i) 0,
+  smooth_warp = function(i) 0.5,
   cluster = NULL
 )
 }
