@@ -132,8 +132,9 @@ compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13)
     data_curve <- data_curves[[j]][, c(1, 4, 2, 3)]
     attr(data_curve, "dist_to_mean") <- elastic_proc2d_mean$distances[[j]]
     attr(data_curve, "rotation") <- elastic_proc2d_mean$fit$G_optims[[j]]
-    #attr(data_curve, "scale") <- 1/elastic_proc2d_mean$fit$b_optims[[j]]^2 * elastic_proc2d_mean$fit$l_optims[[j]] * lengths[[j]]
-    attr(data_curve, "scale") <- elastic_proc2d_mean$fit$l_optims[[j]] * lengths[[j]]
+    attr(data_curve, "scale") <- 1/elastic_proc2d_mean$fit$b_optims[[j]]^2
+    attr(data_curve, "polygon_length") <- lengths[[j]]
+    attr(data_curve, "norm_factor") <- elastic_proc2d_mean$fit$l_optims[[j]]
     attr(data_curve, "translation") <- translations[[j]]
     data_curve
   })
@@ -189,4 +190,5 @@ remove_duplicate <- function (data_curve, closed){
     data_curve$t[nrow(data_curve)] <- 1
   data_curve
 }
+
 

@@ -4,7 +4,14 @@
 \alias{get_procrustes_fit_from_param}
 \title{Helper functions for calculating procrustes data curve from rotation, scaling and translation parameters.}
 \usage{
-get_procrustes_fit_from_param(data_curve, rot, scale, trans)
+get_procrustes_fit_from_param(
+  data_curve,
+  rot,
+  scale,
+  plength,
+  trans,
+  norm_factor
+)
 }
 \arguments{
 \item{data_curve}{A \code{data.frame} with observed points on a curve.
@@ -15,7 +22,11 @@ it is treated as the time parametrisation, not as an additional coordinate.}
 
 \item{scale}{The scaling.}
 
+\item{plength}{The polygon length of the original curve.}
+
 \item{trans}{The translation.}
+
+\item{norm_factor}{The normalization factor from the smooth curve estimate.}
 }
 \description{
 Compute the procrustes fit given optimal rotation, scaling and translation.

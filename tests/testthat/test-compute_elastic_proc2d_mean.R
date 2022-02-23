@@ -253,3 +253,4 @@ test_that("Test variance negative/inf in issue #8 example.", {
     var_type = "smooth",
     pfit_method = "smooth"
   ), NA)
+})
