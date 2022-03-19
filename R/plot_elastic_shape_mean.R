@@ -1,7 +1,7 @@
 #' Plot method for planar elastic procrustes mean curves
-#' @description Plots objects of class \code{elastic_proc2d_mean}.
-#' @param x object of class \code{elastic_proc2d_mean},
-#' usually a result of a call to \code{\link{compute_elastic_proc2d_mean}}
+#' @description Plots objects of class \code{elastic_shape_mean}.
+#' @param x object of class \code{elastic_shaped_mean},
+#' usually a result of a call to \code{\link{compute_elastic_shape_mean}}
 #' @param asp numeric, giving the aspect ratio of the two coordinates,
 #' see \code{\link{plot.window}} for details.
 #' @param col color of the mean curve.
@@ -11,9 +11,9 @@
 #' @importFrom graphics plot lines
 #' @export
 #'
-#' @seealso For examples see documentation of \code{\link{compute_elastic_proc2d_mean}}.
+#' @seealso For examples see documentation of \code{\link{compute_elastic_shape_mean}}.
 
-plot.elastic_proc2d_mean <- function(x, srv = FALSE, centering = TRUE, asp = 1, col = "red", ...){
+plot.elastic_shape_mean <- function(x, srv = FALSE, centering = TRUE, asp = 1, col = "red", ...){
   if(ncol(x$coefs) != 2){
     stop("Plotting option only for planar curves")
   }
@@ -24,7 +24,7 @@ plot.elastic_proc2d_mean <- function(x, srv = FALSE, centering = TRUE, asp = 1, 
         data_curve$t <- data_curve$t_optim
         data_curve <- data_curve[, names(data_curve) != "t_optim"]
       }
-      data_curve <- get_srv_from_points(data_curve) }
+      data_curve <- elasdics::get_srv_from_points(data_curve) }
     else {
       if(centering == FALSE){
         data_curve[,3] <- data_curve[,3] - data_curve[1,3]

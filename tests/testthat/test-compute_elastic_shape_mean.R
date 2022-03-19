@@ -4,14 +4,14 @@ data_curves <- list(data_curve1, data_curve2)
 
 
 test_that("Test default arguments don't produce errors or warnings", {
-  expect_error(compute_elastic_proc2d_mean(data_curves), NA)
-  expect_warning(compute_elastic_proc2d_mean(data_curves), NA)
+  expect_error(compute_elastic_shape_mean(data_curves), NA)
+  expect_warning(compute_elastic_shape_mean(data_curves), NA)
 })
 
 
 test_that("Test arguments are correctly applied", {
 
-  mean <- compute_elastic_proc2d_mean(data_curves)
+  mean <- compute_elastic_shape_mean(data_curves)
   expect_equal(mean$type, "smooth")
   expect_equal(mean$penalty, 2)
   expect_equal(mean$knots, seq(0, 1, len = 13))
@@ -19,7 +19,7 @@ test_that("Test arguments are correctly applied", {
   expect_equal(mean$pfit_method, "smooth")
   expect_equal(sapply(seq_len(10), FUN = mean$smooth_warp), rep(0.5, len = 10))
 
-  mean <- compute_elastic_proc2d_mean(
+  mean <- compute_elastic_shape_mean(
     data_curves,
     type = "polygon",
     penalty = 1,
@@ -39,14 +39,14 @@ test_that("Test arguments are correctly applied", {
 
 
 test_that("Test computed variance in [0,1]", {
-  mean <- compute_elastic_proc2d_mean(data_curves)
+  mean <- compute_elastic_shape_mean(data_curves)
   expect_gt(mean$variance, 0)
   expect_lte(mean$variance, 1)
 })
 
 
 test_that("Test mean has distances in [0,1]", {
-  mean <- compute_elastic_proc2d_mean(data_curves, max_iter = 0)
+  mean <- compute_elastic_shape_mean(data_curves, max_iter = 0)
   for (d in mean$distances) {
     expect_gte(d, 0)
     expect_lte(d, 1)
@@ -55,17 +55,17 @@ test_that("Test mean has distances in [0,1]", {
 
 
 test_that("Test variance == sum-of-squared distances / N", {
-  mean <- compute_elastic_proc2d_mean(data_curves, max_iter = 0)
+  mean <- compute_elastic_shape_mean(data_curves, max_iter = 0)
   ssdn <- sum(mean$distances^2)*2/(length(mean$distances)*(length(mean$distances) - 1))
   expect_equal(mean$variance, ssdn, tolerance = 1e-1)
 })
 
 
 test_that("Test unelastic full procrustes mean has distances", {
-  mean <- compute_elastic_proc2d_mean(data_curves, max_iter = 0)
+  mean <- compute_elastic_shape_mean(data_curves, max_iter = 0)
   expect_equal(mean$data_curves[[1]]$t, mean$data_curves[[1]]$t_optim)
   expect_false(is.null(attr(mean$data_curves[[1]], "dist_to_mean")))
-  mean2 <- compute_elastic_proc2d_mean(data_curves, max_iter = 0, pfit_method = "polygon")
+  mean2 <- compute_elastic_shape_mean(data_curves, max_iter = 0, pfit_method = "polygon")
   expect_equal(mean2$data_curves[[1]]$t, mean2$data_curves[[1]]$t_optim)
   expect_false(is.null(attr(mean2$data_curves[[1]], "dist_to_mean")))
 })
@@ -84,7 +84,7 @@ test_that("Test type = 'smooth': Initial rot, scaling do not matter much", {
   # Get means
   data_curves <- list(data_curve1, data_curve2)
   w <- capture_warnings(
-    mean1 <- compute_elastic_proc2d_mean(data_curves, knots = knots, type = "smooth", penalty = 2)
+    mean1 <- compute_elastic_shape_mean(data_curves, knots = knots, type = "smooth", penalty = 2)
   )
   if (length(w) > 0) {
     for (warn in w) expect_equal(warn, "there is *no* information about some basis coefficients")
@@ -101,7 +101,7 @@ test_that("Test type = 'smooth': Initial rot, scaling do not matter much", {
   # Get means
   data_curves <- list(data_curve1, data_curve2)
   w <- capture_warnings(
-    mean3 <- compute_elastic_proc2d_mean(data_curves, knots = knots, type = "smooth", penalty = 2)
+    mean3 <- compute_elastic_shape_mean(data_curves, knots = knots, type = "smooth", penalty = 2)
   )
   if (length(w) > 0) {
     for (warn in w) expect_equal(warn, "there is *no* information about some basis coefficients")
@@ -123,7 +123,7 @@ test_that("Test type = 'polygon': initial rot, scaling do not matter much", {
   # Get means
   data_curves <- list(data_curve1, data_curve2)
   w <- capture_warnings(
-    mean2 <- compute_elastic_proc2d_mean(data_curves, knots = knots, type = "polygon", penalty = 2)
+    mean2 <- compute_elastic_shape_mean(data_curves, knots = knots, type = "polygon", penalty = 2)
   )
   if (length(w) > 0) {
     for (warn in w) expect_equal(warn, "there is *no* information about some basis coefficients")
@@ -139,7 +139,7 @@ test_that("Test type = 'polygon': initial rot, scaling do not matter much", {
   # Get means
   data_curves <- list(data_curve1, data_curve2)
   w <- capture_warnings(
-    mean4 <- compute_elastic_proc2d_mean(data_curves, knots = knots, type = "polygon", penalty = 2)
+    mean4 <- compute_elastic_shape_mean(data_curves, knots = knots, type = "polygon", penalty = 2)
   )
   if (length(w) > 0) {
     for (warn in w) expect_equal(warn, "there is *no* information about some basis coefficients")
@@ -161,7 +161,7 @@ test_that("Test pfit_method = 'polygon' (depriciated): initial rot, scaling do n
   # Get means
   data_curves <- list(data_curve1, data_curve2)
   w <- capture_warnings(
-    mean1 <- compute_elastic_proc2d_mean(data_curves, knots = knots, type = "smooth", penalty = 2, pfit_method="polygon")
+    mean1 <- compute_elastic_shape_mean(data_curves, knots = knots, type = "smooth", penalty = 2, pfit_method="polygon")
   )
   if (length(w) > 0) {
     for (warn in w) expect_equal(warn, "there is *no* information about some basis coefficients")
@@ -178,7 +178,7 @@ test_that("Test pfit_method = 'polygon' (depriciated): initial rot, scaling do n
   # Get means
   data_curves <- list(data_curve1, data_curve2)
   w <- capture_warnings(
-    mean3 <- compute_elastic_proc2d_mean(data_curves, knots = knots, type = "smooth", penalty = 2, pfit_method="polygon")
+    mean3 <- compute_elastic_shape_mean(data_curves, knots = knots, type = "smooth", penalty = 2, pfit_method="polygon")
   )
   if (length(w) > 0) {
     for (warn in w) expect_equal(warn, "there is *no* information about some basis coefficients")
@@ -211,7 +211,7 @@ test_that("Test length not negative in issue #2 example.", {
   })
 
   # Use smoothing in procrustes fit calculation and re-normalisation.
-  expect_error(compute_elastic_proc2d_mean(
+  expect_error(compute_elastic_shape_mean(
     data_curves,
     knots = seq(0, 1, length = 13),
     type = "smooth",
@@ -245,7 +245,7 @@ test_that("Test variance negative/inf in issue #8 example.", {
   })
 
   # Use smoothing in procrustes fit calculation and re-normalisation.
-  expect_warning(compute_elastic_proc2d_mean(
+  expect_warning(compute_elastic_shape_mean(
     data_curves,
     knots = seq(0, 1, length = 11),
     type = "smooth",

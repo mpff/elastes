@@ -11,7 +11,7 @@
 #' @param pca temp
 #' @param L temp
 #' @return optimal rotation G and scaling b
-#' @importFrom stats approx
+#' @import stats mgcv
 
 fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, cov_fit, pca, L){
 

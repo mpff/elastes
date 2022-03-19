@@ -2,15 +2,10 @@
 % Please edit documentation in R/get_evals.R
 \name{get_evals}
 \alias{get_evals}
-\alias{get_evals.data.frame}
-\alias{get_evals.elastic_proc2d_mean}
+\alias{get_evals.elastic_shape_mean}
 \title{Evaluate a curve on a grid}
 \usage{
-get_evals(curve, t_grid = NULL, ...)
-
-\method{get_evals}{data.frame}(curve, t_grid = NULL, ...)
-
-\method{get_evals}{elastic_proc2d_mean}(curve, t_grid = NULL, centering = TRUE, srv = FALSE, ...)
+\method{get_evals}{elastic_shape_mean}(curve, t_grid = NULL, centering = TRUE, srv = FALSE, ...)
 }
 \arguments{
 \item{curve}{a one parameter function which is to be evaluated on a grid}
@@ -19,11 +14,11 @@ get_evals(curve, t_grid = NULL, ...)
 to be 0, last value needs to be 1.
 If t_grid = NULL, a default regular grid with grid length 0.01 is chosen}
 
-\item{...}{other arguments}
-
 \item{centering}{TRUE if curves shall be centered}
 
 \item{srv}{TRUE if SRV curve shall be evaluated}
+
+\item{...}{other arguments}
 }
 \value{
 a \code{data.frame} with evaluations of the curve

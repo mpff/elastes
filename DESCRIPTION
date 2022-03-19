@@ -8,13 +8,14 @@ Authors@R: c(person("Manuel", "Pfeuffer", role = c("aut", "cre"), email = "mnl.p
 Description: Provides functions to compute elastic shape means for planar curves.
 License: GPL (>= 3)
 Encoding: UTF-8
+Depends:
+    elasdics
 Imports:
     utils,
     gtools,
     stats,
     splines,
     graphics,
-    elasdics,
     mgcv,
     sparseFLMM,
     orthogonalsplinebasis

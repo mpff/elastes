@@ -41,3 +41,4 @@ get_optimal_t <- function(srv_procrustes_curves, coefs, t_optims, type, knots, e
   }
   t_optims
 }
+

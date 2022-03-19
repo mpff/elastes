@@ -1,18 +1,19 @@
 #' Mean estimation for open planar curves.
-#' @name fit_mean_proc2d
+#' @name fit_mean
 #' @description Fits an elastic full Procrustes mean for open, planar curves.
-#' Is usually called from \code{\link{compute_elastic_proc2d_mean}}.
+#' Is usually called from \code{\link{compute_elastic_shape_mean}}.
 #' @param srv_data_curves list of \code{data.frame}s with srv vectors in each row.curves
 #' @param knots set of knots for the mean spline curve
 #' @param type if "smooth" linear srv-splines are used which results in a differentiable mean curve
 #' if "polygon" the mean will be piecewise linear.
 #' @param penalty the penalty to use in the covariance smoothing step. use '-1' for no penalty.
-#' @param var_type assume either "smooth" or "constant" function for variance estimate in cov surface
+#' @param pfit_method (experimental) "smooth" or "polygon"
+#' @param var_type (experimental) assume "smooth" or "constant" measurement-error variance along t
+#' @param smooth_warp (experimental) controls the weighting of original and smoothed observations
+#' over the iterations, if pfit_method == "smooth".
 #' @param max_iter maximal number of iterations
 #' @param eps the algorithm stops if L2 norm of coefficients changes less
-#' @param pfit_method temp
 #' @param cluster a cluster object for use in the \code{bam} call
-#' @param smooth_warp a function controling the weighting between smoothed and sparse observations
 #' @return a \code{list} with entries
 #'   \item{type}{"smooth" or "polygon"}
 #'   \item{coefs}{\code{coefs} srv spline coefficients of the estimated mean}
@@ -29,11 +30,9 @@
 #'       \code{cov_fit} the covariance smoothing objects in the final iteration,
 #'       \code{cov_pca} cov coef matrix pca object in the final iteration and
 #'       \code{pfit_coefs} the mean basis coefs of smoothed pfits in the final iteration}
-#' @importFrom orthogonalsplinebasis SplineBasis GramMatrix
-#' @importFrom gtools combinations
-#' @importFrom splines splineDesign
+#' @import sparseFLMM mgcv
 
-fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max_iter, type, eps, cluster, smooth_warp){
+fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max_iter, type, eps, cluster, smooth_warp){
   # Initial parametrisation, rotation, scaling and coefs.
   t_optims <- lapply(srv_data_curves, function(srv_data_curve){
     c(srv_data_curve$t, 1)
@@ -204,26 +203,6 @@ fit_mean_proc2d <- function(srv_data_curves, knots, penalty, var_type, pfit_meth
 }
 
 
-# Get inner and outer knots.
-get_knots <- function(knots, type){
-  deg <- ifelse(type == "smooth", 1, 0)
-  knotl = 1 / ( length(knots) - 1 )  # mean length of a knot
-  c(rep(-knotl, deg), knots, rep(1+knotl, deg))
-}
-
-
-# Get b-spline Gram matrix.
-get_gram_matrix <- function(knots, type){
-  knots = get_knots(knots, type)
-  if( type == "polygon"){
-    1/(length(knots) - 1) * diag(length(knots) - 1)  # Note: ONLY CORRECT FOR EQUIDISTANT KNOTS!!!
-  } else {
-    osb_smooth = orthogonalsplinebasis::SplineBasis(knots, order = 2)  # degree = order - 1
-    orthogonalsplinebasis::GramMatrix(osb_smooth)
-  }
-}
-
-
 # Get complex srv data curves, with additional oversampling for identifiability.
 get_model_data_complex <- function(t_optims, srv_data_curves, knots, type){
   #compute warped srv vectors
@@ -275,19 +254,6 @@ get_model_data_complex <- function(t_optims, srv_data_curves, knots, type){
   # Return
   q_m_long <- complex(real = q_m_long[,1], imaginary = q_m_long[,2])
   data.frame("id" = ids_long, "m_long" = m_long, "q_m_long" = q_m_long)
-}
-
-
-# Design matrix of mean basis.
-make_design <- function(t, knots, type, closed = FALSE) {
-  deg <- ifelse(type == "smooth", 1, 0)
-  knots <- get_knots(knots, type)
-  design_mat <- splines::splineDesign(knots = knots, x = t, ord = deg + 1)
-  if(closed == TRUE & type == "smooth"){
-    design_mat[,1] <- design_mat[,1] + design_mat[, ncol(design_mat)]
-    design_mat <- design_mat[,-ncol(design_mat)]
-  }
-  design_mat
 }
 
 
@@ -358,4 +324,24 @@ get_unconstrained_basis_coefs <- function(model){
   # Apply trafo to model coefs.
   coef_idxs <- unique(c(1,s_$first.para:s_$last.para))  # Only intercept and tensor product smooth.
   D %*% coef(model)[coef_idxs]
+}
+
+
+#' @title Distance to a smooth curve
+#' @description Finds the distance of a discrete open srv curve to a smooth curve
+#' @param srv_curve srv transformation of the smooth curve, needs to be vectorised
+#' @param s time points for q, first has to be 0, last has to be 1
+#' @param q square root velocity vectors, one less than time points in s
+#' @param eps convergence tolerance
+#' @return distance between srv_curve and q
+
+get_distance <- function(srv_curve, s, q, eps = 10*.Machine$double.eps){
+  p_integrand <- function(t){sapply(t, function(t) sum(srv_curve(t)^2))}
+  p_norm <- stats::integrate(p_integrand,0,1, stop.on.error =FALSE)$value  # should be 1
+  q_norm <- sum(q^2 %*% diff(s))  # should be 1
+  pq_prod <- sapply(1:(length(s)-1), function(i) {
+    stats::integrate(function(t) t(q[,i]) %*% srv_curve(t), s[i], s[i+1], stop.on.error = FALSE)$value
+  })
+  dist <- sqrt(p_norm + q_norm - 2 * sum(pq_prod))
+  dist
 }

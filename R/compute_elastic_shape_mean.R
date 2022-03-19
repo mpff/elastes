@@ -1,36 +1,34 @@
-#' Compute an elastic full Procrustes mean mean for a collection of curves
-#' @name compute_elastic_proc2d_mean
-#' @description Computes a elastic full Procrustes mean for curves stored in \code{data_curves}.
-#' Constructor function for class \code{elastic_proc2d_mean}.
+#' Compute an elastic full Procrustes mean for a collection of curves
+#' @name compute_elastic_shape_mean
+#' @description Computes an elastic full Procrustes mean for curves stored in \code{data_curves}.
+#' Constructor function for class \code{elastic_shape_mean}.
 #' @param data_curves list of \code{data.frame}s with observed points in each row. Each
 #' variable is one coordinate direction. If there is a variable \code{t},
 #' it is treated as the time parametrisation, not as an additional coordinate.
 #' @param knots set of knots for the mean spline curve
 #' @param type if "smooth" linear srv-splines are used which results in a differentiable mean curve
-#' if "polygon" the mean will be piecewise linear, if "cubic" the mean will be two times differentiable.
+#' if "polygon" the mean will be piecewise linear.
 #' @param penalty the penalty to use in the covariance smoothing step. use '-1' for no penalty.
 #' @param pfit_method (experimental) "smooth" or "polygon"
 #' @param var_type (experimental) assume "smooth" or "constant" measurement-error variance along t
-#' @param eps the algorithm stops if L2 norm of coefficients changes less
-#' @param max_iter maximal number of iterations
-#' @param cluster (experimental) use the parallel package for faster computation
 #' @param smooth_warp (experimental) controls the weighting of original and smoothed observations
 #' over the iterations, if pfit_method == "smooth".
-#' @return an object of class \code{elastic_proc2d_mean}, which is a \code{list}
+#' @param eps the algorithm stops if L2 norm of coefficients changes by less than \code{eps}
+#' @param max_iter maximal number of iterations
+#' @param cluster (experimental) use the parallel package for faster computation
+#' @return an object of class \code{elastic_shape_mean}, which is a \code{list}
 #' with entries
-#'   \item{type}{"smooth" if mean was modeled using linear srv-splines,
-#'   "polygon" if constant srv-splines or "cubic" if quadratic srv-splines are used}
+#'   \item{type}{"smooth" if mean was modeled using linear srv-splines, "polygon" if constant srv-splines}
 #'   \item{coefs}{spline coeffiecients}
 #'   \item{knots}{spline knots}
-#'   \item{variance}{sample shape variance}
+#'   \item{variance}{sample elastic shape variance}
 #'   \item{data_curves}{list of \code{data.frame}s with observed points in each row.
 #'   First variable \code{t} gives the initial parametrisation, second variable \code{t_optim}
 #'   the optimal parametrisation when the curve is aligned to the mean. Has the
-#'   attributes 'rotation', 'scaling', 'translation' adn 'dist_to_mean'. Use
+#'   attributes 'rotation', 'scaling', 'translation' and 'dist_to_mean'. Use
 #'   \code{\link{get_procrustes_fit}} to get the elastic full Procrustes fit.}
-#'  \item{fit}{see \code{fit_mean_proc2d}}
+#'  \item{fit}{see \code{fit_mean}}
 #' @export
-#' @import elasdics mgcv sparseFLMM
 #' @examples
 #' curve <- function(t){
 #'   rbind(t*cos(13*t), t*sin(13*t))
@@ -60,19 +58,19 @@
 #'
 #' #compute smooth procrustes mean with 2 order penalty
 #' knots <- seq(0,1, length = 11)
-#' elastic_proc2d_mean <- compute_elastic_proc2d_mean(
+#' elastic_shape_mean <- compute_elastic_shape_mean(
 #'     data_curves,
 #'     knots = knots,
 #'     type = "smooth",
 #'     penalty = 2
 #'     )
-#' plot(elastic_proc2d_mean)
+#' plot(elastic_shape_mean)
 
 
-compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13),
+compute_elastic_shape_mean <- function(data_curves, knots = seq(0, 1, len = 13),
                                   type = c("smooth", "polygon"), penalty = 2, var_type = c("smooth", "constant"),
-                                  pfit_method = c("smooth", "polygon"), eps = 0.01, max_iter = 50,
-                                  smooth_warp = function(i) 0.5, cluster = NULL) {
+                                  pfit_method = c("smooth", "polygon"), smooth_warp = function(i) 0.5,
+                                  eps = 0.01, max_iter = 50, cluster = NULL) {
 
   # Input checks
   stopifnot(all(sapply(data_curves, is.data.frame)))
@@ -121,41 +119,39 @@ compute_elastic_proc2d_mean <- function(data_curves, knots = seq(0, 1, len = 13)
   if(ncol(srv_data_curves[[1]]) != 3) stop("This package was designed to analyse only planar curve data!")
 
   # Calculate elastic full Procrustes mean
-  elastic_proc2d_mean <- fit_mean_proc2d(srv_data_curves = srv_data_curves,
-                                  knots = knots, type = type, penalty = penalty, var_type = var_type, pfit_method = pfit_method,
-                                  max_iter = max_iter, eps = eps, cluster = cluster, smooth_warp = smooth_warp)
+  elastic_shape_mean <- fit_mean(srv_data_curves = srv_data_curves,
+    knots = knots, type = type, penalty = penalty, var_type = var_type, pfit_method = pfit_method,
+    max_iter = max_iter, eps = eps, cluster = cluster, smooth_warp = smooth_warp)
 
   # Add scaling, rotation, translation and distance attributes to the original data curves.
   data_curves <- lapply(1:length(data_curves), function(j){
-    data_curves[[j]]$t_optim <- elastic_proc2d_mean$t_optims[[j]]
+    data_curves[[j]]$t_optim <- elastic_shape_mean$t_optims[[j]]
     attributes(data_curves[[j]]$t_optim) <- NULL
     data_curve <- data_curves[[j]][, c(1, 4, 2, 3)]
-    attr(data_curve, "dist_to_mean") <- elastic_proc2d_mean$distances[[j]]
-    attr(data_curve, "rotation") <- elastic_proc2d_mean$fit$G_optims[[j]]
-    attr(data_curve, "scale") <- 1/elastic_proc2d_mean$fit$b_optims[[j]]^2
+    attr(data_curve, "dist_to_mean") <- elastic_shape_mean$distances[[j]]
+    attr(data_curve, "rotation") <- elastic_shape_mean$fit$G_optims[[j]]
+    attr(data_curve, "scale") <- 1/elastic_shape_mean$fit$b_optims[[j]]^2
     attr(data_curve, "polygon_length") <- lengths[[j]]
-    attr(data_curve, "norm_factor") <- elastic_proc2d_mean$fit$l_optims[[j]]
+    attr(data_curve, "norm_factor") <- elastic_shape_mean$fit$l_optims[[j]]
     attr(data_curve, "translation") <- translations[[j]]
     data_curve
   })
 
   # Calculate variance.
-  eigenvals <- elastic_proc2d_mean$fit$cov_pca$values
+  eigenvals <- elastic_shape_mean$fit$cov_pca$values
   eigenvals <- eigenvals[eigenvals > 0]
   variance <- 1 - eigenvals[1]/sum(eigenvals)
 
   # Return
-  elastic_proc2d_mean$data_curves <- data_curves
-  elastic_proc2d_mean$shift_idxs <- NULL
-  elastic_proc2d_mean$t_optims <- NULL
-  elastic_proc2d_mean$variance <- variance
-  class(elastic_proc2d_mean) <- "elastic_proc2d_mean"
-  elastic_proc2d_mean
+  elastic_shape_mean$data_curves <- data_curves
+  elastic_shape_mean$shift_idxs <- NULL
+  elastic_shape_mean$t_optims <- NULL
+  elastic_shape_mean$variance <- variance
+  class(elastic_shape_mean) <- "elastic_shape_mean"
+  elastic_shape_mean
 }
 
 
-#' Calculates length of curve by connecting its points with line segments.
-#' @param curve curve data
 get_polygon_length <- function(curve) {
   coord_idx <- !(colnames(curve) %in% c("t", "t_optim", "id"))
   curve <- curve[,coord_idx]
@@ -164,31 +160,11 @@ get_polygon_length <- function(curve) {
   sum(sqrt(dx^2 + dy^2))
 }
 
-#' Calculates position of the curve center as the coordinate-wise mean.
-#' @param curve curve data
+
 get_center <- function(curve) {
   coord_idx <- !(colnames(curve) %in% c("t", "t_optim", "id"))
   curve <- curve[,coord_idx]
   colMeans(curve)
-}
-
-#' Removes duplicate points. Code from \code{elasdics:::remove_duplicate}.
-#' @param data_curve curve data
-#' @param closed TRUE if curve is closed (not implemented yet)
-remove_duplicate <- function (data_curve, closed){
-  if (ncol(data_curve) == 1) {
-    attr(data_curve, "points_rm") <- FALSE
-    return(data_curve)
-  }
-  points <- as.data.frame(data_curve)
-  try(points$t <- NULL, silent = TRUE)
-  moves <- c(TRUE, rowSums(apply(points, 2, diff)^2) > max(points) *
-               .Machine$double.eps)
-  data_curve <- data_curve[moves, ]
-  attr(data_curve, "points_rm") <- !all(moves)
-  if (!is.null(data_curve$t) & !closed)
-    data_curve$t[nrow(data_curve)] <- 1
-  data_curve
 }
 
 
