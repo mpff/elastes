@@ -1,4 +1,4 @@
 library(testthat)
-library(elasticproc2d)
+library(elastes)
 
-test_check("elasticproc2d")
+test_check("elastes")

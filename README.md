@@ -1,18 +1,18 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# elasticproc2d
+# elastes
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/mpff/elasticproc2d/workflows/R-CMD-check/badge.svg)](https://github.com/mpff/elasticproc2d/actions)
-[![codecov](https://codecov.io/gh/mpff/elasticproc2d/branch/main/graph/badge.svg?token=p0xOHfDpnk)](https://codecov.io/gh/mpff/elasticproc2d)
+[![R-CMD-check](https://github.com/mpff/elastes/workflows/R-CMD-check/badge.svg)](https://github.com/mpff/elastes/actions)
+[![codecov](https://codecov.io/gh/mpff/elastes/branch/main/graph/badge.svg?token=p0xOHfDpnk)](https://codecov.io/gh/mpff/elastes)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-elasticproc2d is a R package to estimate elastic shape means from sparse
-and irregular planar curves.
+elastes is a R package to estimate elastic shape means from sparse and
+irregular planar curves.
 
 ## Installation
 
@@ -21,7 +21,7 @@ You can install the development version from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("mpff/elasticproc2d")
+devtools::install_github("mpff/elastes")
 ```
 
 ## Example
@@ -29,7 +29,7 @@ devtools::install_github("mpff/elasticproc2d")
 Calculate a smooth elastic shape mean for sparse spirals.
 
 ``` r
-library(elasticproc2d)
+library(elastes)
 
 # define spiral curve
 curve <- function(t){
