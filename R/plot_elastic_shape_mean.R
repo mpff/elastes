@@ -34,7 +34,7 @@ plot.elastic_shape_mean <- function(x, srv = FALSE, centering = TRUE, asp = 1, c
     data_curve
     })
   data_curves <- lapply(data_curves, function(data) data[,colnames(x$coefs)])
-  data_all <- do.call("rbind", data_curves)
+  data_all <- do.call("rbind", list(data_curves, get_evals(x, srv = srv, centering = centering)))
 
   #empty plot
   plot(NULL, xlim = range(data_all[,1]), ylim = range(data_all[,2]), xlab = colnames(x$coefs)[1],
