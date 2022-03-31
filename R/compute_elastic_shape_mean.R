@@ -69,9 +69,10 @@
 
 compute_elastic_shape_mean <- function(data_curves, knots = seq(0, 1, len = 13),
                                   type = c("smooth", "polygon"), penalty = 2, var_type = c("smooth", "constant"),
-                                  pfit_method = c("smooth", "polygon"), smooth_warp = function(i) 0.5,
-                                  eps = 0.01, max_iter = 50, cluster = NULL) {
+                                  pfit_method = c("smooth", "polygon"), smooth_warp = function(i) 0,
+                                  eps = 0.05, max_iter = 50, verbose = F, cluster = NULL) {
 
+  if(verbose) message("Initializing...")
   # Input checks
   stopifnot(all(sapply(data_curves, is.data.frame)))
 
@@ -121,7 +122,7 @@ compute_elastic_shape_mean <- function(data_curves, knots = seq(0, 1, len = 13),
   # Calculate elastic full Procrustes mean
   elastic_shape_mean <- fit_mean(srv_data_curves = srv_data_curves,
     knots = knots, type = type, penalty = penalty, var_type = var_type, pfit_method = pfit_method,
-    max_iter = max_iter, eps = eps, cluster = cluster, smooth_warp = smooth_warp)
+    max_iter = max_iter, eps = eps, verbose = verbose, cluster = cluster, smooth_warp = smooth_warp)
 
   # Add scaling, rotation, translation and distance attributes to the original data curves.
   data_curves <- lapply(1:length(data_curves), function(j){
@@ -148,6 +149,8 @@ compute_elastic_shape_mean <- function(data_curves, knots = seq(0, 1, len = 13),
   elastic_shape_mean$t_optims <- NULL
   elastic_shape_mean$variance <- variance
   class(elastic_shape_mean) <- "elastic_shape_mean"
+
+  if(verbose) message("Finished.")
   elastic_shape_mean
 }
 

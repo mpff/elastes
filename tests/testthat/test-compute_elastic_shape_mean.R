@@ -17,7 +17,7 @@ test_that("Test arguments are correctly applied", {
   expect_equal(mean$knots, seq(0, 1, len = 13))
   expect_equal(mean$var_type, "smooth")
   expect_equal(mean$pfit_method, "smooth")
-  expect_equal(sapply(seq_len(10), FUN = mean$smooth_warp), rep(0.5, len = 10))
+  expect_equal(sapply(seq_len(10), FUN = mean$smooth_warp), rep(0, len = 10))
 
   mean <- compute_elastic_shape_mean(
     data_curves,
@@ -251,6 +251,7 @@ test_that("Test variance negative/inf in issue #8 example.", {
     type = "smooth",
     penalty = 2,
     var_type = "smooth",
-    pfit_method = "smooth"
+    pfit_method = "smooth",
+    smooth_warp = function(i) 0.5
   ), NA)
 })
