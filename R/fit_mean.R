@@ -207,42 +207,16 @@ fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max
 # Get complex srv data curves, with additional oversampling for identifiability.
 get_model_data_complex <- function(t_optims, srv_data_curves, knots, type){
   #compute warped srv vectors
-  q_m_data <- lapply(1:length(srv_data_curves), function(j){
+  q_m <- lapply(1:length(srv_data_curves), function(j){
     old_diff <- diff(c(srv_data_curves[[j]]$t, 1))
     new_diff <- diff(t_optims[[j]])
     as.matrix(srv_data_curves[[j]][,-1])*sqrt(old_diff/new_diff)
   })
 
-  if(type == "polygon"){
-    q_m_all <- lapply(1: length(srv_data_curves), function(j){
-      # Sample additional points in between two knots with not data point.
-      idx_knots <- sapply(knots, function(knot){
-        findInterval(knot, t_optims[[j]], rightmost.closed = TRUE)
-      })
-      if(any(diff(idx_knots) == 0)){
-        t_new <- (knots[-length(knots)] + 0.5*diff(knots))[(diff(idx_knots) == 0)]
-        q_m_knots <- sapply(t_new, function(t){
-          idx_t <- findInterval(t, t_optims[[j]], rightmost.closed = T)
-          q_m_data[[j]][idx_t, ]
-        })
-        q_knots <- data.frame("t" = t_new, t(q_m_knots))
-      } else {
-        q_knots <- NULL
-      }
-      q_data <-  data.frame("t" = t_optims[[j]][-length(t_optims[[j]])], q_m_data[[j]])
-      data <- rbind(q_knots, q_data)
-      unique(data[order(data$t),])
-    })
-    m <- lapply(q_m_all, function(x){
-      c(x$t[-1], 1) - 0.5*diff(c(x$t, 1))
-    })
-    q_m <- lapply(q_m_all, function(x) x[,-1])
-  } else {
-    m <- lapply(t_optims, function(t_optim){
-      t_optim[-1] - 0.5*diff(t_optim)
+  m <- lapply(t_optims, function(t_optim){
+    t_optim[-1] - 0.5*diff(t_optim)
   })
-    q_m <- q_m_data
-  }
+
   #build datacurve ids
   ids <- lapply(1:length(m), function(j){
     id <- rep(j, length(m[[j]]))
