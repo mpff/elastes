@@ -24,33 +24,68 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
     # Restrict basis to ensure positive definiteness (see issue #2)
     Lmbd <- Lmbd[pca$values > 0]
     V <- V[ , pca$values >0]
+
     # Ensure correct Lmbd.inv matrix when only one eigenvalue (see issue #8)
     Lmbd.inv <- if(length(Lmbd) == 1) matrix(1/Lmbd) else diag(1/Lmbd)
-
-    # Construct design matrix in eigen-basis. (Note: L <- chol(G.inv) for Gram-Matrix G of the mean basis)
-    q_B <- make_design(q$m_long, knots, type = type)
-    E <- q_B %*% t(L) %*% V
 
     # Construct the measurement error variance
     s_index <- ifelse(var_type == "smooth", 2, 1)
     T_ <- predict(cov_fit$re, data.frame(t=q$m_long, s=q$m_long, st=1), type = "terms")[,s_index]
 
-    # Construct inverse. Check for negative or zero values.
-    T.inv <- 1/T_
-    if(any(T_ <= 0)){
-      warning(
-        "Found negative values in estimated measurement-error variance tau^2(t)!  Coercing tau^2(t) to its expected positive value! Consider setting var_type = 'constant'."
-      )
-      SE_ <- predict(cov_fit$re, data.frame(t=q$m_long, s=q$m_long, st=1), type = "terms", se.fit = T)$se.fit[,s_index]
-      T.inv <- 1/(T_ + SE_ * dnorm(-T_/SE_)/(1 - pnorm(-T_/SE_)))  # trunc. normal dist.; see #8
+    if(all(T_ > 0)){
+
+      # Construct design matrix in eigen-basis. (Note: L <- chol(G.inv) for Gram-Matrix G of the mean basis)
+      q_B <- make_design(q$m_long, knots, type = type)
+      E <- q_B %*% t(L) %*% V
+
+      # Construct inverse error variance matrix.
+      T.inv <- diag(1/T_)
+
+      # Conditional score covariance.
+      S <- solve(t(Conj(E)) %*% T.inv %*% E + Lmbd.inv)
+
+      # Estimate score vector.
+      z <- S %*% t(Conj(E)) %*% T.inv %*% q$q_m_long
+
+    } else {
+
+      # Get idxs of pos./neg. part of error variance
+      ip <- which(T_ > 0)
+      i0 <- which(T_ <= 0)
+
+      # Construct design matrix in eigen-basis. (Note: L <- chol(G.inv) for Gram-Matrix G of the mean basis)
+      q_Bp <- make_design(q$m_long[ip], knots, type = type)
+      q_B0 <- make_design(q$m_long[i0], knots, type = type)
+      Ep <- q_Bp %*% t(L) %*% V
+      E0 <- q_B0 %*% t(L) %*% V
+
+      # Construct inverse error variance matrix (of pos. part).
+      Tp.inv <- diag(1/T_[ip])
+
+      # Construct QR-decomp of E0
+      QR <- qr(t(E0))
+      Q <- qr.Q(QR, complete = T)
+      M <- Q[,1:QR$rank]
+
+      # Estimated deterministic part of score vector.
+      z0 <- M %*% solve( t(Conj(M)) %*% t(Conj(E0)) %*% E0 %*% M) %*% t(Conj(M)) %*% t(Conj(E0)) %*% q$m_long[i0]
+
+      if(QR$rank < ncol(Q)){
+        N <- Q[,(QR$rank + 1):ncol(Q)]
+
+        # Conditional score covariance.
+        S <- solve( t(Conj(N)) %*% (t(Conj(Ep)) %*% Tp.inv %*% Ep + Lmbd.inv) %*% N)
+
+        # Estimated random part of score vector.
+        zp <- N %*% S %*% t(Conj(N)) %*% ( t(Conj(Ep)) %*% Tp.inv %*% (q$m_long[ip] - Ep %*% z0) - Lmbd.inv %*% z0)
+      } else {
+        N <- 0; S <- 0; zp <- 0
+      }
+
+      # Estimate score vector.
+      z <- zp + z0
+
     }
-    T.inv <- diag(T.inv)
-
-    # Conditional score covariance.
-    S <- solve(t(Conj(E)) %*% T.inv %*% E + Lmbd.inv)
-
-    # Estimate score vector.
-    z <- S %*% t(Conj(E)) %*% T.inv %*% q$q_m_long
 
     # Prepare output
     w <- Conj(z[1])

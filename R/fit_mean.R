@@ -147,8 +147,7 @@ fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max
 
       # Update distance to mean
       if(pfit_method == "smooth"){
-        S <- pfit_prods$S
-        distances[[j]] <<- sqrt(1 - Mod(S[1,1] + c(w * Conj(w))/l))
+        distances[[j]] <<- sqrt(1 - Mod(as.matrix(pfit_prods$S)[1,1] + c(w * Conj(w))/l))
       } else {
         distances[[j]] <- get_distance(
           srv_curve = function(t) t(make_design(t, knots=knots, type=type) %*% coefs),
