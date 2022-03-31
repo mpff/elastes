@@ -61,6 +61,13 @@ fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max
   for (i in 1:max_iter){
     model_data_complex <- get_model_data_complex(t_optims, srv_data_curves, knots, type)
 
+    # Check for inf or extreme outliers in model_data_complex and drop.
+    if(any(!is.finite(Re(model_data_complex$q_m_long)))) {
+      drops <- model_data_complex[!is.finite(Re(model_data_complex$q_m_long)), ]
+      warning(paste("Dropping", nrow(drops), "point(s) in mean estimation."))
+      model_data_complex <- model_data_complex[is.finite(Re(model_data_complex$q_m_long)), ]
+    }
+
     # Build complex response on s,t-grid per curve
     cov_dat <- lapply(split(model_data_complex, model_data_complex$id), function(x) {
       combs <- t(gtools::combinations(nrow(x), 2, repeats.allowed = T))  # Include diagonal
@@ -73,12 +80,6 @@ fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max
     })
     cov_dat <- do.call(rbind, cov_dat)
 
-    # Check for inf or extreme outliers in cov_dat and drop.
-    if(any(!is.finite(Re(cov_dat$qq)))) {
-      drops <- cov_dat[!is.finite(Re(cov_dat$qq)), ]
-      warning(paste("Dropping", nrow(drops), "point(s) in mean estimation."))
-      cov_dat <- cov_dat[is.finite(Re(cov_dat$qq)), ]
-    }
 
     # Tensor product p-spline smoothing of the complex covariance surface.
     cov_fit <- smooth_cov_surface(cov_dat, knots, type, penalty, var_type, cluster)
