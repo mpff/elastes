@@ -111,7 +111,7 @@ test_that("Test type = 'smooth': Initial rot, scaling do not matter much", {
 
 
 test_that("Test type = 'polygon': initial rot, scaling do not matter much", {
-  knots <- seq(0, 1, length = 16)
+  knots <- seq(0, 1, length = 11)
 
   # Apply rot, scaling to data_curve2
   beta <- 2.5
