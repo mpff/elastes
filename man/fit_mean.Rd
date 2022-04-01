@@ -14,6 +14,7 @@ fit_mean(
   type,
   eps,
   cluster,
+  verbose,
   smooth_warp
 )
 }
@@ -36,6 +37,8 @@ if "polygon" the mean will be piecewise linear.}
 \item{eps}{the algorithm stops if L2 norm of coefficients changes less}
 
 \item{cluster}{a cluster object for use in the \code{bam} call}
+
+\item{verbose}{print iterations}
 
 \item{smooth_warp}{(experimental) controls the weighting of original and smoothed observations
 over the iterations, if pfit_method == "smooth".}

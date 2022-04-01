@@ -12,6 +12,7 @@
 #' @param smooth_warp (experimental) controls the weighting of original and smoothed observations
 #' over the iterations, if pfit_method == "smooth".
 #' @param max_iter maximal number of iterations
+#' @param verbose print iterations
 #' @param eps the algorithm stops if L2 norm of coefficients changes less
 #' @param cluster a cluster object for use in the \code{bam} call
 #' @return a \code{list} with entries

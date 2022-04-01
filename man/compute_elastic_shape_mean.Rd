@@ -11,9 +11,10 @@ compute_elastic_shape_mean(
   penalty = 2,
   var_type = c("smooth", "constant"),
   pfit_method = c("smooth", "polygon"),
-  smooth_warp = function(i) 0.5,
-  eps = 0.01,
+  smooth_warp = function(i) 0,
+  eps = 0.05,
   max_iter = 50,
+  verbose = F,
   cluster = NULL
 )
 }
@@ -39,6 +40,8 @@ over the iterations, if pfit_method == "smooth".}
 \item{eps}{the algorithm stops if L2 norm of coefficients changes by less than \code{eps}}
 
 \item{max_iter}{maximal number of iterations}
+
+\item{verbose}{print iterations}
 
 \item{cluster}{(experimental) use the parallel package for faster computation}
 }

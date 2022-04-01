@@ -15,6 +15,7 @@
 #' over the iterations, if pfit_method == "smooth".
 #' @param eps the algorithm stops if L2 norm of coefficients changes by less than \code{eps}
 #' @param max_iter maximal number of iterations
+#' @param verbose print iterations
 #' @param cluster (experimental) use the parallel package for faster computation
 #' @return an object of class \code{elastic_shape_mean}, which is a \code{list}
 #' with entries
