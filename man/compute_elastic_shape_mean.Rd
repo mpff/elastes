@@ -9,7 +9,7 @@ compute_elastic_shape_mean(
   knots = seq(0, 1, len = 13),
   type = c("smooth", "polygon"),
   penalty = 2,
-  var_type = c("smooth", "constant"),
+  var_type = c("smooth", "constant", "zero"),
   pfit_method = c("smooth", "polygon"),
   smooth_warp = function(i) 0,
   eps = 0.05,
@@ -30,7 +30,7 @@ if "polygon" the mean will be piecewise linear.}
 
 \item{penalty}{the penalty to use in the covariance smoothing step. use '-1' for no penalty.}
 
-\item{var_type}{(experimental) assume "smooth" or "constant" measurement-error variance along t}
+\item{var_type}{(experimental) assume "smooth", "constant" or "zero" measurement-error variance along t}
 
 \item{pfit_method}{(experimental) "smooth" or "polygon"}
 

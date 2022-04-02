@@ -25,7 +25,7 @@ fit_mean(
 
 \item{penalty}{the penalty to use in the covariance smoothing step. use '-1' for no penalty.}
 
-\item{var_type}{(experimental) assume "smooth" or "constant" measurement-error variance along t}
+\item{var_type}{(experimental) assume "smooth", "constant" or "zero" measurement-error variance along t}
 
 \item{pfit_method}{(experimental) "smooth" or "polygon"}
 
