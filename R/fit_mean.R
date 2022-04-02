@@ -65,10 +65,10 @@ fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max
 
     model_data_complex <- get_model_data_complex(t_optims, srv_data_curves, knots, type)
 
-    # Check for inf or extreme outliers in model_data_complex and drop.
+    # Check for inf in model_data_complex and drop.
     if(any(!is.finite(Re(model_data_complex$q_m_long)))) {
       drops <- model_data_complex[!is.finite(Re(model_data_complex$q_m_long)), ]
-      message(paste("    Dropping", nrow(drops), "point(s) in mean estimation."))
+      message(paste("    Warning: Dropping", nrow(drops), "point(s) in mean estimation."))
       model_data_complex <- model_data_complex[is.finite(Re(model_data_complex$q_m_long)), ]
     }
 

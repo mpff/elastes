@@ -53,32 +53,43 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
       ip <- which(T_ > 0)
       i0 <- which(T_ <= 0)
 
-      # Construct design matrix in eigen-basis. (Note: L <- chol(G.inv) for Gram-Matrix G of the mean basis)
-      q_Bp <- make_design(q$m_long[ip], knots, type = type)
-      q_B0 <- make_design(q$m_long[i0], knots, type = type)
-      Ep <- q_Bp %*% t(L) %*% V
-      E0 <- q_B0 %*% t(L) %*% V
+      if(length(ip) > 0){
+        # Construct design matrix in eigen-basis. (Note: L <- chol(G.inv) for Gram-Matrix G of the mean basis)
+        q_Bp <- make_design(q$m_long[ip], knots, type = type)
+        q_B0 <- make_design(q$m_long[i0], knots, type = type)
+        Ep <- q_Bp %*% t(L) %*% V
+        E0 <- q_B0 %*% t(L) %*% V
 
-      # Construct inverse error variance matrix (of pos. part).
-      Tp.inv <- diag(1/T_[ip])
+        # Construct inverse error variance matrix (of pos. part).
+        Tp.inv <- diag(1/T_[ip])
 
-      # Construct QR-decomp of E0
-      QR <- qr(t(E0))
-      Q <- qr.Q(QR, complete = T)
-      M <- Q[,1:QR$rank]
+        # Construct QR-decomp of E0
+        QR <- qr(t(E0))
+        Q <- qr.Q(QR, complete = T)
+        M <- Q[,1:QR$rank]
 
-      # Estimated deterministic part of score vector.
-      z0 <- M %*% solve( t(Conj(M)) %*% t(Conj(E0)) %*% E0 %*% M) %*% t(Conj(M)) %*% t(Conj(E0)) %*% q$m_long[i0]
+        # Estimated deterministic part of score vector.
+        z0 <- M %*% solve( t(Conj(M)) %*% t(Conj(E0)) %*% E0 %*% M) %*% t(Conj(M)) %*% t(Conj(E0)) %*% q$m_long[i0]
 
-      if(QR$rank < ncol(Q)){
-        N <- Q[,(QR$rank + 1):ncol(Q)]
+        if(QR$rank < ncol(Q)){
+          N <- Q[,(QR$rank + 1):ncol(Q)]
 
-        # Conditional score covariance.
-        S <- solve( t(Conj(N)) %*% (t(Conj(Ep)) %*% Tp.inv %*% Ep + Lmbd.inv) %*% N)
+          # Conditional score covariance.
+          S <- solve( t(Conj(N)) %*% (t(Conj(Ep)) %*% Tp.inv %*% Ep + Lmbd.inv) %*% N)
 
-        # Estimated random part of score vector.
-        zp <- N %*% S %*% t(Conj(N)) %*% ( t(Conj(Ep)) %*% Tp.inv %*% (q$m_long[ip] - Ep %*% z0) - Lmbd.inv %*% z0)
+          # Estimated random part of score vector.
+          zp <- N %*% S %*% t(Conj(N)) %*% ( t(Conj(Ep)) %*% Tp.inv %*% (q$m_long[ip] - Ep %*% z0) - Lmbd.inv %*% z0)
+        } else {
+          N <- 0; S <- 0; zp <- 0
+        }
+
       } else {
+        q_B0 <- make_design(q$m_long[i0], knots, type = type)
+        E0 <- q_B0 %*% t(L) %*% V
+        QR <- qr(t(E0))
+        Q <- qr.Q(QR, complete = T)
+        M <- Q[,1:QR$rank]
+        z0 <- M %*% solve( t(Conj(M)) %*% t(Conj(E0)) %*% E0 %*% M) %*% t(Conj(M)) %*% t(Conj(E0)) %*% q$m_long[i0]
         N <- 0; S <- 0; zp <- 0
       }
 
