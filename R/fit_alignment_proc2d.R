@@ -29,8 +29,12 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
     Lmbd.inv <- if(length(Lmbd) == 1) matrix(1/Lmbd) else diag(1/Lmbd)
 
     # Construct the measurement error variance
-    s_index <- ifelse(var_type == "smooth", 2, 1)
-    T_ <- predict(cov_fit$re, data.frame(t=q$m_long, s=q$m_long, st=1), type = "terms")[,s_index]
+    if(var_type == "zero"){
+      T_ <- rep(0, length(q$m_long))
+    } else {
+      s_index <- ifelse(var_type == "smooth", 2, 1)
+      T_ <- predict(cov_fit$re, data.frame(t=q$m_long, s=q$m_long, st=1), type = "terms")[,s_index]
+    }
 
     if(all(T_ > 0)){
 

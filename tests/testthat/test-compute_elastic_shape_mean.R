@@ -250,8 +250,7 @@ test_that("Test variance negative/inf in issue #8 example.", {
     knots = seq(0, 1, length = 11),
     type = "smooth",
     penalty = 2,
-    var_type = "smooth",
-    pfit_method = "smooth",
-    smooth_warp = function(i) 0.5
+    var_type = "zero",
+    pfit_method = "smooth"
   ), NA)
 })

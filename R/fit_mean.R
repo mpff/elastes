@@ -8,7 +8,7 @@
 #' if "polygon" the mean will be piecewise linear.
 #' @param penalty the penalty to use in the covariance smoothing step. use '-1' for no penalty.
 #' @param pfit_method (experimental) "smooth" or "polygon"
-#' @param var_type (experimental) assume "smooth" or "constant" measurement-error variance along t
+#' @param var_type (experimental) assume "smooth", "constant" or "zero" measurement-error variance along t
 #' @param smooth_warp (experimental) controls the weighting of original and smoothed observations
 #' over the iterations, if pfit_method == "smooth".
 #' @param max_iter maximal number of iterations
@@ -252,10 +252,15 @@ smooth_cov_surface <- function(cov_dat, knots, type, penalty, var_type, cluster)
       Re(qq) ~ s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx, xt = list(skew = FALSE)) + st,
       data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots, cluster = cluster)
     )
-  } else {
+  } else if(var_type == "smooth") {
     cov_fit$re <- mgcv::bam(
       Re(qq) ~ s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx, xt = list(skew = FALSE))
       + s(t, by = st, bs = "ps", k = cov.k, m = c(cov.m, 1), fx = cov.fx),
+      data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots, cluster = cluster)
+    )
+  } else {
+    cov_fit$re <- mgcv::bam(
+      Re(qq) ~ s(s, t, bs="symm", k = cov.k, m = c(cov.m, cov.d), fx = cov.fx, xt = list(skew = FALSE)),
       data = cov_dat, method = "REML", knots=list(s = cov.knots, t = cov.knots, cluster = cluster)
     )
   }

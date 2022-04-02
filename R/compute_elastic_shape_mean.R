@@ -10,7 +10,7 @@
 #' if "polygon" the mean will be piecewise linear.
 #' @param penalty the penalty to use in the covariance smoothing step. use '-1' for no penalty.
 #' @param pfit_method (experimental) "smooth" or "polygon"
-#' @param var_type (experimental) assume "smooth" or "constant" measurement-error variance along t
+#' @param var_type (experimental) assume "smooth", "constant" or "zero" measurement-error variance along t
 #' @param smooth_warp (experimental) controls the weighting of original and smoothed observations
 #' over the iterations, if pfit_method == "smooth".
 #' @param eps the algorithm stops if L2 norm of coefficients changes by less than \code{eps}
@@ -69,7 +69,7 @@
 
 
 compute_elastic_shape_mean <- function(data_curves, knots = seq(0, 1, len = 13),
-                                  type = c("smooth", "polygon"), penalty = 2, var_type = c("smooth", "constant"),
+                                  type = c("smooth", "polygon"), penalty = 2, var_type = c("smooth", "constant", "zero"),
                                   pfit_method = c("smooth", "polygon"), smooth_warp = function(i) 0,
                                   eps = 0.05, max_iter = 50, verbose = F, cluster = NULL) {
 
@@ -79,7 +79,7 @@ compute_elastic_shape_mean <- function(data_curves, knots = seq(0, 1, len = 13),
 
   # Match arguments
   type <- match.arg(type, c("smooth", "polygon"))
-  var_type <- match.arg(var_type, c("smooth", "constant"))
+  var_type <- match.arg(var_type, c("smooth", "constant", "zero"))
   pfit_method <- match.arg(pfit_method, c("smooth", "polygon"))
 
   # remove duplicated points
