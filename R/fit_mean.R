@@ -68,7 +68,7 @@ fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max
     # Check for inf in model_data_complex and drop.
     if(any(!is.finite(Re(model_data_complex$q_m_long)))) {
       drops <- model_data_complex[!is.finite(Re(model_data_complex$q_m_long)), ]
-      message(paste("    Warning: Dropping", nrow(drops), "point(s) in mean estimation."))
+      warning(paste("    Warning: Dropping", nrow(drops), "point(s) in mean estimation."))
       model_data_complex <- model_data_complex[is.finite(Re(model_data_complex$q_m_long)), ]
     }
 
@@ -83,7 +83,6 @@ fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max
       )
     })
     cov_dat <- do.call(rbind, cov_dat)
-
 
     # Tensor product p-spline smoothing of the complex covariance surface.
     cov_fit <- smooth_cov_surface(cov_dat, knots, type, penalty, var_type, cluster)
@@ -209,16 +208,28 @@ fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max
 
 # Get complex srv data curves, with additional oversampling for identifiability.
 get_model_data_complex <- function(t_optims, srv_data_curves, knots, type){
-  #compute warped srv vectors
-  q_m <- lapply(1:length(srv_data_curves), function(j){
-    old_diff <- diff(c(srv_data_curves[[j]]$t, 1))
-    new_diff <- diff(t_optims[[j]])
-    as.matrix(srv_data_curves[[j]][,-1])*sqrt(old_diff/new_diff)
-  })
 
-  m <- lapply(t_optims, function(t_optim){
-    t_optim[-1] - 0.5*diff(t_optim)
-  })
+  if (type == "polygon") {
+    q_m <- lapply(1:length(srv_data_curves), function(j) {
+      curve <- data.frame(t = t_optims[[j]], get_points_from_srv(srv_data_curves[[j]]))
+      curve_at_knots <- cbind(t = knots, get_evals(curve,
+                                                   t_grid = knots))
+      get_srv_from_points(curve_at_knots)[, -1, drop = FALSE]
+    })
+    m <- lapply(srv_data_curves, function(x) {
+      knots[-1] - 0.5 * diff(knots)
+    })
+  }
+  else {
+    q_m <- lapply(1:length(srv_data_curves), function(j) {
+      old_diff <- diff(c(srv_data_curves[[j]]$t, 1))
+      new_diff <- diff(t_optims[[j]])
+      as.matrix(srv_data_curves[[j]][, -1]) * sqrt(old_diff/new_diff)
+    })
+    m <- lapply(t_optims, function(t_optim) {
+      t_optim[-1] - 0.5 * diff(t_optim)
+    })
+  }
 
   #build datacurve ids
   ids <- lapply(1:length(m), function(j){
