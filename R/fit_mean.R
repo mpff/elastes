@@ -211,10 +211,9 @@ get_model_data_complex <- function(t_optims, srv_data_curves, knots, type){
 
   if (type == "polygon") {
     q_m <- lapply(1:length(srv_data_curves), function(j) {
-      curve <- data.frame(t = t_optims[[j]], get_points_from_srv(srv_data_curves[[j]]))
-      curve_at_knots <- cbind(t = knots, get_evals(curve,
-                                                   t_grid = knots))
-      get_srv_from_points(curve_at_knots)[, -1, drop = FALSE]
+      curve <- data.frame(t = t_optims[[j]], elasdics::get_points_from_srv(srv_data_curves[[j]]))
+      curve_at_knots <- cbind(t = knots, get_evals(curve, t_grid = knots))
+      elasdics::get_srv_from_points(curve_at_knots)[, -1, drop = FALSE]
     })
     m <- lapply(srv_data_curves, function(x) {
       knots[-1] - 0.5 * diff(knots)
