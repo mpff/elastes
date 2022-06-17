@@ -31,7 +31,7 @@
 #'       \code{cov_fit} the covariance smoothing objects in the final iteration,
 #'       \code{cov_pca} cov coef matrix pca object in the final iteration and
 #'       \code{pfit_coefs} the mean basis coefs of smoothed pfits in the final iteration}
-#' @import sparseFLMM mgcv
+#' @import sparseFLMM
 
 fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max_iter, type, eps, cluster, verbose, smooth_warp){
   # Initial parametrisation, rotation, scaling and coefs.
@@ -74,7 +74,10 @@ fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max
 
     # Build complex response on s,t-grid per curve
     cov_dat <- lapply(split(model_data_complex, model_data_complex$id), function(x) {
-      combs <- t(gtools::combinations(nrow(x), 2, repeats.allowed = T))  # Include diagonal
+      co <- utils::combn(seq_len(nrow(x)), 2)
+      di <- t(matrix(c(seq_len(nrow(x)), seq_len(nrow(x))), ncol=2))  # Include diagonal
+      cb <- cbind(di, co)
+      combs <- cb[,order(cb[1,], cb[2,])]
       data.frame(
         qq = Conj(x$q_m_long[combs[1,]]) * x$q_m_long[combs[2,]],
         s = x$m_long[combs[1,]],
@@ -309,14 +312,14 @@ get_unconstrained_basis_coefs <- function(model){
   toy_dat <- expand.grid(s = knots_all, t = knots_all)
 
   # Create toy design matrix and calculate trafo matrix.
-  X <- Predict.matrix(s_, toy_dat)
-  X_ <- PredictMat(s_, toy_dat)
+  X <- mgcv::Predict.matrix(s_, toy_dat)
+  X_ <- mgcv::PredictMat(s_, toy_dat)
   X_ <- if(s_$xt$skew == FALSE) {cbind(1, X_)} else {X_}  # ToDo: Check this!
   D <- solve(crossprod(X), crossprod(X, X_))
 
   # Apply trafo to model coefs.
   coef_idxs <- unique(c(1,s_$first.para:s_$last.para))  # Only intercept and tensor product smooth.
-  D %*% coef(model)[coef_idxs]
+  D %*% stats::coef(model)[coef_idxs]
 }
 
 

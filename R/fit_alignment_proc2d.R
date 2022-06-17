@@ -11,7 +11,6 @@
 #' @param pca temp
 #' @param L temp
 #' @return optimal rotation G and scaling b
-#' @import stats mgcv
 
 fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, cov_fit, pca, L){
 
@@ -33,7 +32,7 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
       T_ <- rep(0, length(q$m_long))
     } else {
       s_index <- ifelse(var_type == "smooth", 2, 1)
-      T_ <- predict(cov_fit$re, data.frame(t=q$m_long, s=q$m_long, st=1), type = "terms")[,s_index]
+      T_ <- stats::predict(cov_fit$re, data.frame(t=q$m_long, s=q$m_long, st=1), type = "terms")[,s_index]
     }
 
     if(all(T_ > 0)){
@@ -113,8 +112,8 @@ fit_alignment_proc2d <- function(q, type, knots, var_type, coefs.compl, method, 
 
     mean_func <- function(t) {t(make_design(t, knots = knots, type = type) %*% coefs.compl)}
     qm_ints <- sapply(1:(length(m)-1), function(i) {
-      re <- integrate(function(s) Re(Conj(q$q_m_long[i]) * mean_func(s)), m[i], m[i+1], rel.tol = 0.01)$value
-      im <- integrate(function(s) Im(Conj(q$q_m_long[i]) * mean_func(s)), m[i], m[i+1], rel.tol = 0.01)$value
+      re <- stats::integrate(function(s) Re(Conj(q$q_m_long[i]) * mean_func(s)), m[i], m[i+1], rel.tol = 0.01)$value
+      im <- stats::integrate(function(s) Im(Conj(q$q_m_long[i]) * mean_func(s)), m[i], m[i+1], rel.tol = 0.01)$value
       re + 1i * im
     })
 

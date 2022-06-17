@@ -2,6 +2,8 @@ Package: elastes
 Type: Package
 Title: Elastic Full Procrustes Analysis of Sparse and Irregular Planar Curves
 Version: 0.1.3
+Title: Elastic Full Procrustes Means for Sparse and Irregular Planar Curves
+Version: 0.1.4.9000
 Authors@R: c(person("Manuel", "Pfeuffer", role = c("aut", "cre"), email = "mnl.pfeuffer@gmail.com"),
   person("Almond", "Stoecker", role = "ths", email = "almond.stoecker@hu-berlin.de"),
   person("Lisa", "Steyer", role = "ths", email = "lisa.steyer@hu-berlin.de"))
@@ -9,16 +11,15 @@ Description: Provides functions to compute elastic shape means for planar curves
 License: GPL (>= 3)
 Encoding: UTF-8
 Depends:
-    elasdics
+  elasdics
 Imports:
-    utils,
-    gtools,
-    stats,
-    splines,
-    graphics,
-    mgcv,
-    sparseFLMM,
-    orthogonalsplinebasis
+  utils,
+  graphics,
+  stats,
+  splines,
+  mgcv,
+  sparseFLMM,
+  orthogonalsplinebasis
 Suggests:
     knitr,
     covr,

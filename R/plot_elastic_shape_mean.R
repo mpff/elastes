@@ -10,7 +10,6 @@
 #' @param ... further plotting parameters.
 #' @importFrom graphics plot lines
 #' @export
-#'
 #' @seealso For examples see documentation of \code{\link{compute_elastic_shape_mean}}.
 
 plot.elastic_shape_mean <- function(x, srv = FALSE, centering = TRUE, asp = 1, col = "red", ...){
