@@ -1,0 +1,11 @@
+## R package reference generated from DESCRIPTION metadata
+citation(auto = meta)
+
+## Paper
+bibentry(bibtype = "Misc",
+         title = "Elastic Full Procrustes Analysis of Plane Curves via Hermitian Covariance Smoothing",
+         author = c(person("Almond", "Stöcker"),
+                    person("Manuel", "Pfeuffer"),
+                    person("Lisa", "Steyer"),
+                    person("Sonja", "Greven")),
+         year = "2022", publisher = "arXiv", doi = "10.48550/ARXIV.2203.10522")

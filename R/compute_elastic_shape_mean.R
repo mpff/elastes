@@ -154,21 +154,3 @@ compute_elastic_shape_mean <- function(data_curves, knots = seq(0, 1, len = 13),
   if(verbose) message("Finished.")
   elastic_shape_mean
 }
-
-
-get_polygon_length <- function(curve) {
-  coord_idx <- !(colnames(curve) %in% c("t", "t_optim", "id"))
-  curve <- curve[,coord_idx]
-  dx <- diff(curve[,1])
-  dy <- diff(curve[,2])
-  sum(sqrt(dx^2 + dy^2))
-}
-
-
-get_center <- function(curve) {
-  coord_idx <- !(colnames(curve) %in% c("t", "t_optim", "id"))
-  curve <- curve[,coord_idx]
-  colMeans(curve)
-}
-
-

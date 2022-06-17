@@ -7,7 +7,7 @@
 get_procrustes_fit(data_curve)
 }
 \arguments{
-\item{data_curve}{A \code{data.frame} in an \code{elastic_proc2d_mean} object.}
+\item{data_curve}{A \code{data.frame} in an \code{elastic_shape_mean} object.}
 }
 \description{
 Compute the procrustes fit.
