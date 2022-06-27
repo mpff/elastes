@@ -20,7 +20,15 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-elastes is a R package to estimate elastic shape means from sparse and irregular planar curves.
+elastes is a R package that provides functions for the computation of functional elastic shape 
+  means over sets of open planar curves. The package is particularly suitable for 
+  settings where these curves are only sparsly and irregularly observed. It uses 
+  a novel approach for elastic shape mean estimation, where planar curves are
+  treated as complex functions and a full Procrustes mean is estimated from the
+  corresponding smoothed Hermitian covariance surface. This is combined with the 
+  methods for elastic mean estimation proposed in Steyer, Stöcker, Greven	(2021)
+  <arXiv:2104.11039>. See Stöcker et. al. (2022) <arXiv:2203.10522> for details.
+
 
 ## Installation
 
@@ -53,7 +61,7 @@ data_curves <- lapply(1:10, function(i){
              ncol = 2))
 })
 
-# randomly rotate and scale curves
+# apply random rotation and scaling to spiral curves
 rand_scale <- function(curve){ ( 0.5 + runif(1) ) * curve }
 rand_rotate <- function(curve){
   names <- colnames(curve)
@@ -67,7 +75,7 @@ rand_rotate <- function(curve){
 data_curves <- lapply(data_curves, rand_scale)
 data_curves <- lapply(data_curves, rand_rotate)
 
-# compute smooth procrustes mean with 2nd order penalty
+# compute smooth procrustes mean using a 2nd order penalty in the estimation
 knots <- seq(0,1, length = 11)
 elastic_shape_mean <- compute_elastic_shape_mean(
   data_curves,
