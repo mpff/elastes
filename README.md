@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/mpff/elastes/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mpff/elastes/actions/workflows/R-CMD-check.yaml)
-[![codecov](https://app.codecov.io/gh/mpff/elastes/branch/main/graph/badge.svg?token=p0xOHfDpnk)](https://app.codecov.io/gh/mpff/elastes)
+[![codecov](https://codecov.io/gh/mpff/elastes/branch/main/graph/badge.svg?token=p0xOHfDpnk)](https://app.codecov.io/gh/mpff/elastes)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
