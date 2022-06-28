@@ -26,4 +26,5 @@ Plots objects of class \code{elastic_shape_mean}.
 }
 \seealso{
 For examples see documentation of \code{\link{compute_elastic_shape_mean}}.
+See \code{\link[elasdics]{plot.elastic_mean}} for the original code.
 }

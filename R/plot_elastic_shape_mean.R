@@ -11,6 +11,7 @@
 #' @importFrom graphics plot lines
 #' @export
 #' @seealso For examples see documentation of \code{\link{compute_elastic_shape_mean}}.
+#' See \code{\link[elasdics]{plot.elastic_mean}} for the original code.
 
 plot.elastic_shape_mean <- function(x, srv = FALSE, centering = TRUE, asp = 1, col = "red", ...){
   if(ncol(x$coefs) != 2){
