@@ -51,14 +51,15 @@ You may have to install the shapes package first.
 
 ```{r}
 # install.packages("shapes")
-digit3 <- shapes::digit3.dat
+library(shapes)
+data(digit3.dat)
 ```
 
 The data still has the form of a three dimensional array.
 We will have to convert it to a list of data.frames, where each data.frame corresponds to one curve.
 
 ```{r}
-digit3 <- apply(digit3, MARGIN = 3, FUN = function(curve){
+digit3 <- apply(digit3.dat, MARGIN = 3, FUN = function(curve){
   data.frame(X1 = curve[,1], X2 = curve[,2])
 })
 ```
