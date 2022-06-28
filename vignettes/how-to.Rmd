@@ -30,7 +30,7 @@ methods for elastic mean estimation proposed in Steyer, Stöcker, Greven	(2021)
 Like many other R packages, the simplest way to obtain elastes is to install it directly from CRAN. Type
 the following command in R console:
 
-```{r, eval=FALSE}
+```{r eval=FALSE}
 install.packages("elastes")
 ```
 
@@ -92,6 +92,6 @@ The method can control for different types of measurement-error variance along t
 
 See also the documentation for more information.
 
-```{r, eval=FALSE}
+```{r eval=FALSE}
 help(compute_elastic_shape_mean)
 ```
