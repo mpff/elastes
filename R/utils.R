@@ -40,11 +40,12 @@ get_center <- function(curve) {
 
 get_distance <- function(srv_curve, s, q, eps = 10*.Machine$double.eps){
   p_integrand <- function(t){sapply(t, function(t) sum(srv_curve(t)^2))}
-  p_norm <- stats::integrate(p_integrand,0,1, stop.on.error =FALSE)$value  # should be 1
+  p_norm <- stats::integrate(p_integrand, 0, 1, stop.on.error =FALSE)$value  # should be 1
   q_norm <- sum(q^2 %*% diff(s))  # should be 1
   pq_prod <- sapply(1:(length(s)-1), function(i) {
     stats::integrate(function(t) t(q[,i]) %*% srv_curve(t), s[i], s[i+1], stop.on.error = FALSE)$value
   })
-  dist <- sqrt(p_norm + q_norm - 2 * sum(pq_prod))
-  dist
+  dist2 <- p_norm + q_norm - 2 * sum(pq_prod)
+  if(dist2 < 0) dist2 <- 0
+  sqrt(dist2)
 }
