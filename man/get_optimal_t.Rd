@@ -11,7 +11,7 @@ get_optimal_t(srv_procrustes_curves, coefs, t_optims, type, knots, eps, i)
 
 \item{coefs}{mean coefficients}
 
-\item{t_optims}{current optimal parametrisation}
+\item{t_optims}{current optimal parametrization}
 
 \item{type}{"smooth" or "polygon"}
 
@@ -27,5 +27,5 @@ optimal time points have the distance of the observation to the srv_curve as an 
 }
 \description{
 Finds optimal aligned time points for srv curve q to  srv curve p using
-coordinate wise optimisation.
+coordinate wise optimization.
 }

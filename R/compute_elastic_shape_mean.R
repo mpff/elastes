@@ -4,7 +4,7 @@
 #' Constructor function for class \code{elastic_shape_mean}.
 #' @param data_curves list of \code{data.frame}s with observed points in each row. Each
 #' variable is one coordinate direction. If there is a variable \code{t},
-#' it is treated as the time parametrisation, not as an additional coordinate.
+#' it is treated as the time parametrization, not as an additional coordinate.
 #' @param knots set of knots for the mean spline curve
 #' @param type if "smooth" linear srv-splines are used which results in a differentiable mean curve
 #' if "polygon" the mean will be piecewise linear.
@@ -20,12 +20,12 @@
 #' @return an object of class \code{elastic_shape_mean}, which is a \code{list}
 #' with entries
 #'   \item{type}{"smooth" if mean was modeled using linear srv-splines, "polygon" if constant srv-splines}
-#'   \item{coefs}{spline coeffiecients}
+#'   \item{coefs}{spline coefficients}
 #'   \item{knots}{spline knots}
 #'   \item{variance}{sample elastic shape variance}
 #'   \item{data_curves}{list of \code{data.frame}s with observed points in each row.
-#'   First variable \code{t} gives the initial parametrisation, second variable \code{t_optim}
-#'   the optimal parametrisation when the curve is aligned to the mean. Has the
+#'   First variable \code{t} gives the initial parametrization, second variable \code{t_optim}
+#'   the optimal parametrization when the curve is aligned to the mean. Has the
 #'   attributes 'rotation', 'scaling', 'translation' and 'dist_to_mean'. Use
 #'   \code{\link{get_procrustes_fit}} to get the elastic full Procrustes fit.}
 #'  \item{fit}{see \code{fit_mean}}
@@ -92,8 +92,8 @@ compute_elastic_shape_mean <- function(data_curves, knots = seq(0, 1, len = 13),
     curve
   })
 
-  # parametrisation with respect to arc length if not given,
-  # after this, parametrisation is always in the first column
+  # parametrization with respect to arc length if not given,
+  # after this, parametrization is always in the first column
   data_curves <- lapply(data_curves, function(data_curve){
     if(!("t" %in% colnames(data_curve))){
       data.frame("t" = elasdics::get_arc_length_param(data_curve), data_curve)

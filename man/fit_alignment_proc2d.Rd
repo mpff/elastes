@@ -17,7 +17,7 @@ fit_alignment_proc2d(
 )
 }
 \arguments{
-\item{q}{complex srv curve with parametrization, needs to be vectorised.
+\item{q}{complex srv curve with parametrization, needs to be vectorized.
 The result of a call to \code{get_model_data_complex}}
 
 \item{type}{spline degree}

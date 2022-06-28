@@ -1,12 +1,12 @@
-#' Plot method for planar elastic procrustes mean curves
+#' Plot method for planar elastic Procrustes mean curves
 #' @description Plots objects of class \code{elastic_shape_mean}.
 #' @param x object of class \code{elastic_shaped_mean},
 #' usually a result of a call to \code{\link{compute_elastic_shape_mean}}
 #' @param asp numeric, giving the aspect ratio of the two coordinates,
 #' see \code{\link{plot.window}} for details.
 #' @param col color of the mean curve.
-#' @param srv TRUE if the SRV curve shall be plotted
-#' @param centering TRUE if mean and pfits shalle be centered
+#' @param srv TRUE if the SRV curve should be plotted
+#' @param centering TRUE if mean and pfits should be centered
 #' @param ... further plotting parameters.
 #' @importFrom graphics plot lines
 #' @export

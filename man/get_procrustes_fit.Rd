@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_procrustes_fit_from_param.R
 \name{get_procrustes_fit}
 \alias{get_procrustes_fit}
-\title{Helper functions for calculating procrustes data curve from rotation, scaling and translation parameters.}
+\title{Helper functions for calculating Procrustes data curve from rotation, scaling and translation parameters.}
 \usage{
 get_procrustes_fit(data_curve)
 }
@@ -10,5 +10,5 @@ get_procrustes_fit(data_curve)
 \item{data_curve}{A \code{data.frame} in an \code{elastic_shape_mean} object.}
 }
 \description{
-Compute the procrustes fit.
+Compute the Procrustes fit.
 }

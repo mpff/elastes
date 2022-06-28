@@ -19,13 +19,13 @@
 #'   \item{type}{"smooth" or "polygon"}
 #'   \item{coefs}{\code{coefs} srv spline coefficients of the estimated mean}
 #'   \item{knots}{spline knots}
-#'   \item{penalty}{penalty usedin the covariance estimation}
+#'   \item{penalty}{penalty used in the covariance estimation}
 #'   \item{distances}{distances to mean}
 #'   \item{fit}{a \code{list} containing
-#'       \code{t_optims}{optimal parametrisations}
+#'       \code{t_optims}{optimal parametrizations}
 #'       \code{G_optims}{optimal rotations}
 #'       \code{b_optims}{optimal scalings}
-#'       \code{n_optims}{optimal re-normalisation}
+#'       \code{n_optims}{optimal re-normalization}
 #'       \code{n_iter}{number of iterations until convergence}
 #'       \code{gram} the mean basis Gram matrix,
 #'       \code{cov_fit} the covariance smoothing objects in the final iteration,
@@ -119,7 +119,7 @@ fit_mean <- function(srv_data_curves, knots, penalty, var_type, pfit_method, max
       l <- pfit_prods$l  # length(beta)
       pfit_coefs[[j]] <<- pfit_prods$q_coefs
 
-      # Save scaling and rotation alignment, save re-normalisation.
+      # Save scaling and rotation alignment, save re-normalization.
       b_optims[[j]] <<- Mod(w)
       G_optims[[j]] <<- Arg(w)
       l_optims_old[[j]] <<- l_optims[[j]]  # b_optims and l_optims are from diff. iterations!

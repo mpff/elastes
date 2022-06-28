@@ -2,7 +2,7 @@
 #'
 #' @param curve a \code{data.frame} with observed points in each row. Each
 #'   variable is one coordinate direction. If there is a variable \code{t},
-#'   \code{t_optim} or \code{id}, it is treated as the time parametrisation, not
+#'   \code{t_optim} or \code{id}, it is treated as the time parametrization, not
 #'   as an additional coordinate.
 #' @return The length of \code{curve}, treating it as a polygon.
 
@@ -19,7 +19,7 @@ get_polygon_length <- function(curve) {
 #'
 #' @param curve a \code{data.frame} with observed points in each row. Each
 #'   variable is one coordinate direction. If there is a variable \code{t},
-#'   \code{t_optim} or \code{id}, it is treated as the time parametrisation, not
+#'   \code{t_optim} or \code{id}, it is treated as the time parametrization, not
 #'   as an additional coordinate.
 #' @return The average of observed points in \code{curve}.
 
@@ -32,7 +32,7 @@ get_center <- function(curve) {
 
 #' @title Distance to a smooth curve
 #' @description Finds the distance of a discrete open srv curve to a smooth curve
-#' @param srv_curve srv transformation of the smooth curve, needs to be vectorised
+#' @param srv_curve srv transformation of the smooth curve, needs to be vectorized
 #' @param s time points for q, first has to be 0, last has to be 1
 #' @param q square root velocity vectors, one less than time points in s
 #' @param eps convergence tolerance

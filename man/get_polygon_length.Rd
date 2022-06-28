@@ -9,7 +9,7 @@ get_polygon_length(curve)
 \arguments{
 \item{curve}{a \code{data.frame} with observed points in each row. Each
 variable is one coordinate direction. If there is a variable \code{t},
-\code{t_optim} or \code{id}, it is treated as the time parametrisation, not
+\code{t_optim} or \code{id}, it is treated as the time parametrization, not
 as an additional coordinate.}
 }
 \value{

@@ -14,7 +14,7 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 elastes is a R package that provides functions for the computation of
 functional elastic shape means over sets of open planar curves. The
 package is particularly suitable for settings where these curves are
-only sparsly and irregularly observed. It uses a novel approach for
+only sparsely and irregularly observed. It uses a novel approach for
 elastic shape mean estimation, where planar curves are treated as
 complex functions and a full Procrustes mean is estimated from the
 corresponding smoothed Hermitian covariance surface. This is combined

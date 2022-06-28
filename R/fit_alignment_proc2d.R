@@ -1,6 +1,6 @@
 #' @title Optimal rotation and scaling alignment to a smooth curve
 #' @description Finds optimal rotation and scaling alignment for a discrete open srv curve to a smooth curve
-#' @param q complex srv curve with parametrization, needs to be vectorised.
+#' @param q complex srv curve with parametrization, needs to be vectorized.
 #' The result of a call to \code{get_model_data_complex}
 #' @param type spline degree
 #' @param knots basis knots

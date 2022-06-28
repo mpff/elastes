@@ -1,6 +1,6 @@
-#' Helper functions for calculating procrustes data curve from rotation, scaling and translation parameters.
+#' Helper functions for calculating Procrustes data curve from rotation, scaling and translation parameters.
 #' @name get_procrustes_fit
-#' @description Compute the procrustes fit.
+#' @description Compute the Procrustes fit.
 #' @param data_curve A \code{data.frame} in an \code{elastic_shape_mean} object.
 #' @export
 
@@ -17,12 +17,12 @@ get_procrustes_fit <- function(data_curve)
 }
 
 
-#' Helper functions for calculating procrustes data curve from rotation, scaling and translation parameters.
-#' @name get_procrustes_fit_from_param
-#' @description Compute the procrustes fit given optimal rotation, scaling and translation.
+#' Helper functions for calculating Procrustes data curve from rotation, scaling and translation parameters.
+#' @name get_Procrustes_fit_from_param
+#' @description Compute the Procrustes fit given optimal rotation, scaling and translation.
 #' @param data_curve A \code{data.frame} with observed points on a curve.
 #' Each row is one point, each variable one coordinate direction. If there is a variable \code{t},
-#' it is treated as the time parametrisation, not as an additional coordinate.
+#' it is treated as the time parametrization, not as an additional coordinate.
 #' @param rot The rotation (in radian).
 #' @param scale The scaling.
 #' @param plength The polygon length of the original curve.

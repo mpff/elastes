@@ -1,9 +1,9 @@
 #' @title Finds optimal alignment for discrete open curves
 #' @description Finds optimal aligned time points for srv curve q to  srv curve p using
-#' coordinate wise optimisation.
+#' coordinate wise optimization.
 #' @param srv_procrustes_curves scaling and rotation aligned srv curves
 #' @param coefs mean coefficients
-#' @param t_optims current optimal parametrisation
+#' @param t_optims current optimal parametrization
 #' @param type "smooth" or "polygon"
 #' @param knots mean basis knots
 #' @param eps convergence tolerance

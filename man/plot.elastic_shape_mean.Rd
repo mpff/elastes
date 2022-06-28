@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_elastic_shape_mean.R
 \name{plot.elastic_shape_mean}
 \alias{plot.elastic_shape_mean}
-\title{Plot method for planar elastic procrustes mean curves}
+\title{Plot method for planar elastic Procrustes mean curves}
 \usage{
 \method{plot}{elastic_shape_mean}(x, srv = FALSE, centering = TRUE, asp = 1, col = "red", ...)
 }
@@ -10,9 +10,9 @@
 \item{x}{object of class \code{elastic_shaped_mean},
 usually a result of a call to \code{\link{compute_elastic_shape_mean}}}
 
-\item{srv}{TRUE if the SRV curve shall be plotted}
+\item{srv}{TRUE if the SRV curve should be plotted}
 
-\item{centering}{TRUE if mean and pfits shalle be centered}
+\item{centering}{TRUE if mean and pfits should be centered}
 
 \item{asp}{numeric, giving the aspect ratio of the two coordinates,
 see \code{\link{plot.window}} for details.}

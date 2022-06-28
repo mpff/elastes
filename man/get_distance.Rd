@@ -7,7 +7,7 @@
 get_distance(srv_curve, s, q, eps = 10 * .Machine$double.eps)
 }
 \arguments{
-\item{srv_curve}{srv transformation of the smooth curve, needs to be vectorised}
+\item{srv_curve}{srv transformation of the smooth curve, needs to be vectorized}
 
 \item{s}{time points for q, first has to be 0, last has to be 1}
 
