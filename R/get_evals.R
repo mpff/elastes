@@ -1,6 +1,3 @@
-#' @name get_evals
-#' @method get_evals elastic_shape_mean
-#'
 #' @title Evaluate a curve on a grid
 #' @param curve a one parameter function which is to be evaluated on a grid
 #' @param t_grid the curve is evaluated at the values in t_grid, first value needs
@@ -11,10 +8,45 @@
 #' @param ... other arguments
 #' @return a \code{data.frame} with evaluations of the curve
 #' at the values in \code{t_grid} in its rows.
+#' @export
 #' @examples
 #' curve <- function(t){c(t*sin(10*t), t*cos(10*t))}
 #' plot(get_evals(curve), type = "b")
-#' @importFrom elasdics get_evals
+#' @seealso See \code{\link[elasdics]{get_evals}} for the original code.
+
+get_evals <- function(curve, t_grid = NULL, ...){
+  UseMethod("get_evals")
+}
+
+#' @export
+get_evals.default <- function(curve, t_grid = NULL,  ...){
+  if(is.null(t_grid)) t_grid <- seq(0,1, by = 0.01)
+  data.frame(t(sapply(t_grid, curve)))
+}
+
+
+#' @rdname get_evals
+#' @export
+
+get_evals.data.frame <- function(curve, t_grid = NULL, ...){
+  if("t" != names(curve)[1]) stop("Parametrisation t must be in the first column!")
+  if(is.null(t_grid)) t_grid <- seq(0,1, by = 0.01)
+
+  points <- sapply(t_grid, function(t){
+    idx <- findInterval(t, curve$t, rightmost.closed = T)
+    weights <- c(1,-1)*(curve$t[c(idx +1, idx)] - t)/(curve$t[idx + 1] - curve$t[idx])
+    t(weights)%*%as.matrix(curve[c(idx, idx + 1), -1, drop = FALSE])
+  })
+
+  if(!is.matrix(points)) points <- t(matrix(points))
+  points <- as.data.frame(t(points))
+  names(points) <- names(curve)[-1]
+  points
+}
+
+
+#' @rdname get_evals
+#' @export
 
 get_evals.elastic_shape_mean <- function(curve, t_grid = NULL,
                                    centering = TRUE, srv = FALSE, ...){
