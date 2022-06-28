@@ -15,9 +15,8 @@ Description: Provides functions for the computation of functional elastic shape
   <arXiv:2104.11039>. See Stöcker et. al. (2022) <arXiv:2203.10522> for details.
 License: GPL (>= 3)
 Encoding: UTF-8
-Depends:
-  elasdics
 Imports:
+  elasdics,
   utils,
   graphics,
   stats,

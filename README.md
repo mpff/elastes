@@ -38,7 +38,6 @@ Calculate a smooth elastic shape mean for sparse spirals.
 
 ``` r
 library(elastes)
-#> Loading required package: elasdics
 
 # define spiral curve
 curve <- function(t){
