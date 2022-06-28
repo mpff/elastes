@@ -6,18 +6,6 @@ get_knots <- function(knots, type){
 }
 
 
-# Get b-spline Gram matrix.
-get_gram_matrix <- function(knots, type){
-  knots = get_knots(knots, type)
-  if( type == "polygon"){
-    1/(length(knots) - 1) * diag(length(knots) - 1)  # Note: ONLY CORRECT FOR EQUIDISTANT KNOTS!!!
-  } else {
-    osb_smooth = orthogonalsplinebasis::SplineBasis(knots, order = 2)  # degree = order - 1
-    orthogonalsplinebasis::GramMatrix(osb_smooth)
-  }
-}
-
-
 # Design matrix of mean basis.
 make_design <- function(t, knots, type, closed = FALSE) {
   deg <- ifelse(type == "smooth", 1, 0)
@@ -29,3 +17,17 @@ make_design <- function(t, knots, type, closed = FALSE) {
   }
   design_mat
 }
+
+
+# Get b-spline Gram matrix.
+get_gram_matrix <- function(knots, type){
+  knots = get_knots(knots, type)
+  if( type == "polygon"){
+    diag(diff(knots))
+  } else {
+    osb_smooth = orthogonalsplinebasis::SplineBasis(knots, order = 2)  # degree = order - 1
+    orthogonalsplinebasis::GramMatrix(osb_smooth)
+  }
+}
+
+
