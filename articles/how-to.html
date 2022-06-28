@@ -73,7 +73,7 @@
 
     
     
-<p>This vignette describes basic usage of elastes in R. elastes is a R package that provides functions for the computation of functional elastic shape means over sets of open planar curves. The package is particularly suitable for settings where these curves are only sparsly and irregularly observed. It uses a novel approach for elastic shape mean estimation, where planar curves are treated as complex functions and a full Procrustes mean is estimated from the corresponding smoothed Hermitian covariance surface. This is combined with the methods for elastic mean estimation proposed in Steyer, Stöcker, Greven (2021) &lt;arXiv:2104.11039&gt;. See Stöcker et. al. (2022) &lt;arXiv:2203.10522&gt; for details.</p>
+<p>This vignette describes basic usage of elastes in R. elastes is a R package that provides functions for the computation of functional elastic shape means over sets of open planar curves. The package is particularly suitable for settings where these curves are only sparsely and irregularly observed. It uses a novel approach for elastic shape mean estimation, where planar curves are treated as complex functions and a full Procrustes mean is estimated from the corresponding smoothed Hermitian covariance surface. This is combined with the methods for elastic mean estimation proposed in Steyer, Stöcker, Greven (2021) &lt;arXiv:2104.11039&gt;. See Stöcker et. al. (2022) &lt;arXiv:2203.10522&gt; for details.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -91,12 +91,13 @@
 <p>We load a set of 30 sparse handwritten digit 3’s from the shapes package for illustration. You may have to install the shapes package first.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("shapes")</span></span>
-<span><span class="va">digit3</span> <span class="op">&lt;-</span> <span class="fu">shapes</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/shapes/man/digit3.dat.html" class="external-link">digit3.dat</a></span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.maths.nottingham.ac.uk/~ild/shapes" class="external-link">shapes</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in rgl.init(initValue, onlyNULL): RGL: unable to open X11 display</span></span>
-<span><span class="co">#&gt; Warning: 'rgl.init' failed, running with 'rgl.useNULL = TRUE'.</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: 'rgl.init' failed, running with 'rgl.useNULL = TRUE'.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">digit3.dat</span><span class="op">)</span></span></code></pre></div>
 <p>The data still has the form of a three dimensional array. We will have to convert it to a list of data.frames, where each data.frame corresponds to one curve.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">digit3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">digit3</span>, MARGIN <span class="op">=</span> <span class="fl">3</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">curve</span><span class="op">)</span><span class="op">{</span></span>
+<code class="sourceCode R"><span><span class="va">digit3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">digit3.dat</span>, MARGIN <span class="op">=</span> <span class="fl">3</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">curve</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>X1 <span class="op">=</span> <span class="va">curve</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, X2 <span class="op">=</span> <span class="va">curve</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 <p>We can compute a functional mean curve by calling <code>compute_elastic_shape_mean</code> using the specified set of knots and type of mean (polygonal or smooth).</p>

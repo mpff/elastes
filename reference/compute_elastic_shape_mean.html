@@ -74,7 +74,7 @@ Constructor function for class <code>elastic_shape_mean</code>.</p>
     <dl><dt>data_curves</dt>
 <dd><p>list of <code>data.frame</code>s with observed points in each row. Each
 variable is one coordinate direction. If there is a variable <code>t</code>,
-it is treated as the time parametrisation, not as an additional coordinate.</p></dd>
+it is treated as the time parametrization, not as an additional coordinate.</p></dd>
 
 
 <dt>knots</dt>
@@ -131,7 +131,7 @@ over the iterations, if pfit_method == "smooth".</p></dd>
 <dd><p>"smooth" if mean was modeled using linear srv-splines, "polygon" if constant srv-splines</p></dd>
 
 <dt>coefs</dt>
-<dd><p>spline coeffiecients</p></dd>
+<dd><p>spline coefficients</p></dd>
 
 <dt>knots</dt>
 <dd><p>spline knots</p></dd>
@@ -141,8 +141,8 @@ over the iterations, if pfit_method == "smooth".</p></dd>
 
 <dt>data_curves</dt>
 <dd><p>list of <code>data.frame</code>s with observed points in each row.
-First variable <code>t</code> gives the initial parametrisation, second variable <code>t_optim</code>
-the optimal parametrisation when the curve is aligned to the mean. Has the
+First variable <code>t</code> gives the initial parametrization, second variable <code>t_optim</code>
+the optimal parametrization when the curve is aligned to the mean. Has the
 attributes 'rotation', 'scaling', 'translation' and 'dist_to_mean'. Use
 <code><a href="get_procrustes_fit.html">get_procrustes_fit</a></code> to get the elastic full Procrustes fit.</p></dd>
 
