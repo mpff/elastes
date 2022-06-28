@@ -7,14 +7,10 @@ get_knots <- function(knots, type){
 
 
 # Design matrix of mean basis.
-make_design <- function(t, knots, type, closed = FALSE) {
+make_design <- function(t, knots, type) {
   deg <- ifelse(type == "smooth", 1, 0)
   knots <- get_knots(knots, type)
   design_mat <- splines::splineDesign(knots = knots, x = t, ord = deg + 1)
-  if(closed == TRUE & type == "smooth"){
-    design_mat[,1] <- design_mat[,1] + design_mat[, ncol(design_mat)]
-    design_mat <- design_mat[,-ncol(design_mat)]
-  }
   design_mat
 }
 
@@ -29,5 +25,3 @@ get_gram_matrix <- function(knots, type){
     orthogonalsplinebasis::GramMatrix(osb_smooth)
   }
 }
-
-
