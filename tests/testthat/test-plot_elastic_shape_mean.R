@@ -23,5 +23,5 @@ test_that("Test can plot srv curve",{
 })
 
 test_that("Test can plot centered curve",{
-  expect_warning(plot(esm, centering = TRUE), regexp = NA)
+  expect_warning(plot(esm, centering = FALSE), regexp = NA)
 })

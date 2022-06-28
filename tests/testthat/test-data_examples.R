@@ -8,7 +8,6 @@ test_that("Test variance negative/inf in issue #8 example.", {
   curve <- function(t) {
     rbind(t * cos(2 * t), t * sin(2 * t))
   }
-
   # randomly draw sparse curve with noise
   data_curves <- lapply(1:4, function(i) {
     m <- sample(10:15, 1)
