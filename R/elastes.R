@@ -6,9 +6,8 @@
 #' a novel approach for elastic shape mean estimation, where planar curves are
 #' treated as complex functions and a full Procrustes mean is estimated from the
 #' corresponding smoothed hermitian covariance surface, which is combined with the
-#' methods for elastic mean estimation proposed in Steyer, Stöcker, Greven	(2021)
-#' <arXiv:2104.11039>. See Stöcker et. al. (2022) <arXiv:2203.10522> for details
-#' on the method.
+#' methods for elastic mean estimation proposed in Steyer, Stöcker, Greven	(2021).
+#' See Stöcker et. al. (2022) for details on the method.
 #'
 #' Compute a mean for a set of observed curves: \code{\link{compute_elastic_shape_mean}}
 #'
