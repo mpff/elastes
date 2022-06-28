@@ -18,10 +18,8 @@ only sparsly and irregularly observed. It uses a novel approach for
 elastic shape mean estimation, where planar curves are treated as
 complex functions and a full Procrustes mean is estimated from the
 corresponding smoothed Hermitian covariance surface. This is combined
-with the methods for elastic mean estimation proposed in [Steyer,
-Stöcker, Greven (2022)](https://doi.org/10.1111/biom.13706). See
-[Stöcker et. al. (2022)](https://doi.org/10.48550/arXiv.2203.10522) for
-details.
+with the methods for elastic mean estimation proposed in Steyer,
+Stöcker, Greven (2022). See Stöcker et. al. (2022) for details.
 
 ## Installation
 
