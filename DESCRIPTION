@@ -7,7 +7,7 @@ Authors@R: c(person("Manuel", "Pfeuffer", role = c("aut", "cre"), email = "mnl.p
   person("Almond", "Stoecker", role = "aut", email = "almond.stoecker@hu-berlin.de"))
 Description: Provides functions for the computation of functional elastic shape 
   means over sets of open planar curves. The package is particularly suitable for 
-  settings where these curves are only sparsly and irregularly observed. It uses 
+  settings where these curves are only sparsely and irregularly observed. It uses 
   a novel approach for elastic shape mean estimation, where planar curves are
   treated as complex functions and a full Procrustes mean is estimated from the
   corresponding smoothed Hermitian covariance surface. This is combined with the 
