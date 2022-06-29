@@ -15,7 +15,7 @@ There were 2 NOTEs:
     cker (15:63, 16:37)
     et (16:42)
     
- -> These are not misspelled.
+ -> These words are not misspelled.
   
   Found the following (possibly) invalid URLs:
     URL: https://doi.org/10.1111/biom.13706
@@ -38,7 +38,8 @@ There were 2 NOTEs:
   Found the following files/directories:
     'lastMiKTeXException'
   
- -> 
+ -> This NOTE came up using 'check_rhub()' and could not be reproduced locally.
+
 
 ## Downstream dependencies
 

@@ -43,7 +43,8 @@ You may have to install the shapes package first.
 
 ```{r}
 # install.packages("shapes")
-digit3.dat <- shapes::digit3.dat
+library(shapes)
+data(digit3.dat)
 ```
 
 The data still has the form of a three dimensional array.
