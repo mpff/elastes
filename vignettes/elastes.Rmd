@@ -21,16 +21,17 @@ suitable for settings where these curves are only sparsely and irregularly obser
 It uses a novel approach for elastic shape mean estimation, where planar curves are
 treated as complex functions and a full Procrustes mean is estimated from the
 corresponding smoothed Hermitian covariance surface. This is combined with the 
-methods for elastic mean estimation proposed in Steyer, Stöcker, Greven	(2021)
-<arXiv:2104.11039>. See Stöcker et. al. (2022) <arXiv:2203.10522> for details.
+methods for elastic mean estimation proposed in 
+[Steyer, Stöcker, Greven (2022)](https://doi.org/10.1111/biom.13706).
+See [Stöcker et. al. (2022)](https://doi.org/10.48550/arXiv.2203.10522) for details.
 
 
 ## Installation
 
 Like many other R packages, the simplest way to obtain elastes is to install it directly from CRAN. Type
-the following command in R console:
+the following command in your R console:
 
-```{r eval=FALSE}
+```{r, eval=FALSE}
 install.packages("elastes")
 ```
 
@@ -42,7 +43,7 @@ functions, basic operations and outputs
 
 Firstly, load up the elastes package.
 
-```{r setup}
+```{r}
 library(elastes)
 ```
 
@@ -51,8 +52,7 @@ You may have to install the shapes package first.
 
 ```{r}
 # install.packages("shapes")
-library(shapes)
-data(digit3.dat)
+digit3.dat <- shapes::digit3.dat
 ```
 
 The data still has the form of a three dimensional array.
@@ -68,7 +68,6 @@ We can compute a functional mean curve by calling `compute_elastic_shape_mean`
 using the specified set of knots and type of mean (polygonal or smooth).
 
 ```{r}
-knots <- seq(0, 1, length = 11)
 mean_smooth <- compute_elastic_shape_mean(digit3, knots = seq(0, 1, length = 11), type = "smooth")
 mean_poly <- compute_elastic_shape_mean(digit3, knots = seq(0, 1, length = 13), type = "polygon")
 ```
@@ -77,10 +76,10 @@ Then we can plot the result. The call to `plot.elastic_shape_mean` shows the est
 mean function, together with the so called Procrustes fits - the centered and rotation
 plus scaling aligned data curves.
 
-```{r fig1, fig.height = 3.5, fig.width = 7, fig.align = "center"}
+```{r, fig.height = 3.5, fig.width = 7, fig.align = "center"}
 par(mfrow=c(1, 2))
-plot(mean_smooth)
-plot(mean_poly, col = "blue")
+plot(mean_smooth, main = "smooth mean")
+plot(mean_poly, col = "blue", main = "polygonal mean")
 ```
 
 
@@ -93,6 +92,6 @@ The method can control for different types of measurement-error variance along t
 
 See also the documentation for more information.
 
-```{r eval=FALSE}
+```{r, eval=FALSE}
 help(compute_elastic_shape_mean)
 ```

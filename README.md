@@ -25,6 +25,13 @@ details.
 
 ## Installation
 
+The simplest way to obtain elastes is to install it directly from CRAN.
+Type the following command in your R console:
+
+``` r
+install.packages("elastes")
+```
+
 You can install the development version from
 [GitHub](https://github.com/) with:
 
@@ -80,4 +87,4 @@ elastic_shape_mean <- compute_elastic_shape_mean(
 plot(elastic_shape_mean)
 ```
 
-![](man/figures/README-example-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-4-1.png)<!-- -->
