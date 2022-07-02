@@ -1,8 +1,17 @@
+## Resubmission
+
+This is a resubmission. In this version I have:
+
+* Changed T/F to TRUE/FALSE in function's default parameters.
+* Documented missing return values in exported functions.
+* Removed 'par()' call in 'elastes.Rmd' vignette.
+
+
 ## R CMD check results
 
 There were no ERRORs or WARNINGs. 
 
-There were 2 NOTEs:
+There was 1 NOTE:
 
 * checking CRAN incoming feasibility ... NOTE
   Maintainer: 'Manuel Pfeuffer <mnl.pfeuffer@gmail.com>'
@@ -34,13 +43,6 @@ There were 2 NOTEs:
   
  -> HTTP site https://doi.org/10.1111/biom.13706 works in a browser.
     
-
-* checking for detritus in the temp directory ... NOTE
-  Found the following files/directories:
-    'lastMiKTeXException'
-  
- -> This NOTE came up using 'check_rhub()' and could not be reproduced locally.
-
 
 ## Downstream dependencies
 

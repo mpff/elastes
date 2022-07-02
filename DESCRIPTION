@@ -1,7 +1,7 @@
 Package: elastes
 Type: Package
 Title: Elastic Full Procrustes Means for Sparse and Irregular Planar Curves
-Version: 0.1.5.9000
+Version: 0.1.6
 Authors@R: c(person("Manuel", "Pfeuffer", role = c("aut", "cre"), email = "mnl.pfeuffer@gmail.com"),
   person("Lisa", "Steyer", role = "aut", email = "lisa.steyer@hu-berlin.de"),
   person("Almond", "Stoecker", role = "aut", email = "almond.stoecker@hu-berlin.de"))
