@@ -21,6 +21,9 @@ see \code{\link{plot.window}} for details.}
 
 \item{...}{further plotting parameters.}
 }
+\value{
+No return value, called for side effects.
+}
 \description{
 Plots objects of class \code{elastic_shape_mean}.
 }

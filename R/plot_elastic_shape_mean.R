@@ -2,13 +2,14 @@
 #' @description Plots objects of class \code{elastic_shape_mean}.
 #' @param x object of class \code{elastic_shaped_mean},
 #' usually a result of a call to \code{\link{compute_elastic_shape_mean}}
+#' @param srv TRUE if the SRV curve should be plotted
+#' @param centering TRUE if mean and pfits should be centered
 #' @param asp numeric, giving the aspect ratio of the two coordinates,
 #' see \code{\link{plot.window}} for details.
 #' @param col color of the mean curve.
-#' @param srv TRUE if the SRV curve should be plotted
-#' @param centering TRUE if mean and pfits should be centered
 #' @param ... further plotting parameters.
 #' @importFrom graphics plot lines
+#' @return No return value, called for side effects.
 #' @export
 #' @seealso For examples see documentation of \code{\link{compute_elastic_shape_mean}}.
 #' See \code{\link[elasdics]{plot.elastic_mean}} for the original code.
