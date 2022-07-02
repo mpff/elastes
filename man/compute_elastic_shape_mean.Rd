@@ -14,7 +14,7 @@ compute_elastic_shape_mean(
   smooth_warp = function(i) 0,
   eps = 0.05,
   max_iter = 50,
-  verbose = F,
+  verbose = FALSE,
   cluster = NULL
 )
 }

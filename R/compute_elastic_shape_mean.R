@@ -71,7 +71,7 @@
 compute_elastic_shape_mean <- function(data_curves, knots = seq(0, 1, len = 13),
                                   type = c("smooth", "polygon"), penalty = 2, var_type = c("smooth", "constant", "zero"),
                                   pfit_method = c("smooth", "polygon"), smooth_warp = function(i) 0,
-                                  eps = 0.05, max_iter = 50, verbose = F, cluster = NULL) {
+                                  eps = 0.05, max_iter = 50, verbose = FALSE, cluster = NULL) {
 
   if(verbose) message("Initializing...")
   # Input checks

@@ -1,6 +1,8 @@
 # elastes 0.1.5.9000
 
+* Changed T/F to TRUE/FALSE in function's default parameters.
 * Removed 'par()' call in 'elastes.Rmd' vignette.
+
 # elastes 0.1.5
 
 * Added a `NEWS.md` file to track changes to the package.
