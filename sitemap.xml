@@ -34,6 +34,9 @@
     <loc>https://mpff.github.io/elastes/reference/fit_mean.html</loc>
   </url>
   <url>
+    <loc>https://mpff.github.io/elastes/reference/get_Procrustes_fit_from_param.html</loc>
+  </url>
+  <url>
     <loc>https://mpff.github.io/elastes/reference/get_center.html</loc>
   </url>
   <url>
@@ -50,9 +53,6 @@
   </url>
   <url>
     <loc>https://mpff.github.io/elastes/reference/get_procrustes_fit.html</loc>
-  </url>
-  <url>
-    <loc>https://mpff.github.io/elastes/reference/get_procrustes_fit_from_param.html</loc>
   </url>
   <url>
     <loc>https://mpff.github.io/elastes/reference/index.html</loc>
