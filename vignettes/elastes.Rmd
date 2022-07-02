@@ -57,20 +57,29 @@ digit3 <- apply(digit3.dat, MARGIN = 3, FUN = function(curve){
 ```
 
 We can compute a functional mean curve by calling `compute_elastic_shape_mean` 
-using the specified set of knots and type of mean (polygonal or smooth).
-
-```{r}
-mean_smooth <- compute_elastic_shape_mean(digit3, knots = seq(0, 1, length = 11), type = "smooth")
-mean_poly <- compute_elastic_shape_mean(digit3, knots = seq(0, 1, length = 13), type = "polygon")
-```
-
-Then we can plot the result. The call to `plot.elastic_shape_mean` shows the estimated
+by specifiying the set of knots to be used and the type of mean.
+Here we estimate and plot a smooth mean using 11 equidistant knots.
+The call to `plot.elastic_shape_mean` shows the estimated
 mean function, together with the so called Procrustes fits - the centered and rotation
 plus scaling aligned data curves.
 
-```{r, fig.height = 3.5, fig.width = 7, fig.align = "center"}
-par(mfrow=c(1, 2))
+```{r, fig.height = 3.5, fig.width = 3.5, fig.align = "center"}
+mean_smooth <- compute_elastic_shape_mean(
+  digit3, 
+  knots = seq(0, 1, length = 11), 
+  type = "smooth"
+)
 plot(mean_smooth, main = "smooth mean")
+```
+
+Here we estimate and plot a polygonal mean using 13 equidistant knots.
+
+```{r, fig.height = 3.5, fig.width = 3.5, fig.align = "center"}
+mean_poly <- compute_elastic_shape_mean(
+  digit3, 
+  knots = seq(0, 1, length = 13),
+  type = "polygon"
+)
 plot(mean_poly, col = "blue", main = "polygonal mean")
 ```
 
