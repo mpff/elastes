@@ -1,3 +1,7 @@
+# elastes 0.1.6.9000 (development)
+
+* Updated e-mails in `DESCRIPTION` file.
+
 # elastes 0.1.6
 
 * Changed T/F to TRUE/FALSE in function's default parameters.
