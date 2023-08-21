@@ -1,7 +1,8 @@
 # elastes 0.1.6.9000 (development)
 
-* Updated e-mails in `DESCRIPTION` file.
+* Updated e-mail and copyright holder in `DESCRIPTION` file.
 * Add appropriate PKGNAME-package \alias as per "Documenting packages" in R-exts.
+* Bump RoxygenNote to 7.2.3 in DESCRIPTION.
 
 
 # elastes 0.1.6
