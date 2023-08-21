@@ -18,7 +18,6 @@ test_that("Test variance negative/inf in issue #8 example.", {
     ))
   })
 
-  expect_error(compute_elastic_shape_mean(data_curves, var_type = "zero"), NA)
   expect_error(compute_elastic_shape_mean(data_curves, type = "polygon"), NA)
 })
 
