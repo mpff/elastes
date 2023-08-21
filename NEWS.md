@@ -1,6 +1,8 @@
 # elastes 0.1.6.9000 (development)
 
 * Updated e-mails in `DESCRIPTION` file.
+* Add appropriate PKGNAME-package \alias as per "Documenting packages" in R-exts.
+
 
 # elastes 0.1.6
 
