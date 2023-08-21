@@ -35,4 +35,5 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-URL: https://mpff.github.io/elastes/
+URL: https://mpff.github.io/elastes/, https://github.com/mpff/elastes
+BugReports: https://github.com/mpff/elastes/issues
