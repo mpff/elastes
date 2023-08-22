@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   elastes: elastes.html
-last_built: 2023-08-22T08:37Z
+last_built: 2023-08-22T08:40Z
 urls:
   reference: https://mpff.github.io/elastes/reference
   article: https://mpff.github.io/elastes/articles
