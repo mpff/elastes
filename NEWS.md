@@ -1,3 +1,5 @@
+# elastes (development version)
+
 # elastes 0.1.7
 
 * Updated e-mail and copyright holder in `DESCRIPTION` file.
