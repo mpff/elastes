@@ -1,48 +1,32 @@
-## Resubmission
-
-This is a resubmission. In this version I have:
-
-* Changed T/F to TRUE/FALSE in function's default parameters.
-* Documented missing return values in exported functions.
-* Removed 'par()' call in 'elastes.Rmd' vignette.
-
-
 ## R CMD check results
 
-There were no ERRORs or WARNINGs. 
+0 errors | 0 warnings | 1 note
 
-There was 1 NOTE:
 
-* checking CRAN incoming feasibility ... NOTE
-  Maintainer: 'Manuel Pfeuffer <mnl.pfeuffer@gmail.com>'
+* checking CRAN incoming feasibility:
+  Maintainer: 'Manuel Pfeuffer <manuel.pfeuffer@hu-berlin.de>'
   
-  New submission
-  
-  Possibly misspelled words in DESCRIPTION:
-    Greven (15:69)
-    Steyer (15:51)
-    al (16:46)
-    cker (15:63, 16:37)
-    et (16:42)
-    
- -> These words are not misspelled.
+  New maintainer:
+    Manuel Pfeuffer <manuel.pfeuffer@hu-berlin.de>
+  Old maintainer(s):
+    Manuel Pfeuffer <mnl.pfeuffer@gmail.com>
+
+  -> This change is correct.    
   
   Found the following (possibly) invalid URLs:
     URL: https://doi.org/10.1111/biom.13706
       From: README.md
-      Status: 503
-      Message: Service Unavailable
-      
- -> HTTP site https://doi.org/10.1111/biom.13706 works in a browser.
+      Status: 403
+      Message: Forbidden
   
   Found the following (possibly) invalid DOIs:
     DOI: 10.1111/biom.13706
       From: DESCRIPTION
-      Status: Service Unavailable
-      Message: 503
+      Status: Forbidden
+      Message: 403
+      
+  -> URL and DOI are correct and work.
   
- -> HTTP site https://doi.org/10.1111/biom.13706 works in a browser.
-    
 
 ## Downstream dependencies
 
